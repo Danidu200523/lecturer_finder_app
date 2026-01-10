@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lecturer_finder_app/splash/splash_screen.dart';
+import 'routes/app_routes.dart';
+import 'core/theme/app_theme.dart';
 
 void main() {
   runApp(const LecturerFinderApp());
@@ -12,14 +13,9 @@ class LecturerFinderApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'FindMy Lecturer',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-        ),
-        useMaterial3: true,
-      ),
-      home: const SplashScreen(), // 👈 APP STARTS HERE
+      theme: AppTheme.lightTheme,
+      initialRoute: '/',
+      routes: AppRoutes.routes, // 👈 APP STARTS HERE
     );
   }
 }
