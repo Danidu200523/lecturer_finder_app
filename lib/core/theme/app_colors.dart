@@ -12,6 +12,7 @@ class AppColors {
 
   // Text
   static const Color titleText = Color(0xFF000000);
+  static const Color whiteText = Color(0xFFffffff);
   static const Color subtitleText = Color(0xFF888888);
   static const Color linkedText = Color(0xFF1C4DB1);
   

@@ -15,10 +15,10 @@ class AppTheme {
         fontWeight: FontWeight.w500, // Medium
       ),
       titleMedium: TextStyle(
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w500, // Medium
       ),
       labelLarge: TextStyle(
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w500, // Medium
       ),
     ),
   );

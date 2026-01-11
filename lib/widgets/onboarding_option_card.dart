@@ -35,11 +35,11 @@ class OnboardingOptionCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            text,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500, // Poppins Medium
-              color: AppColors.blue,
+           text,
+           style: const TextStyle(
+           fontSize: 39,                 // 👈 Figma size
+           fontWeight: FontWeight.w500,  // Medium
+           color: Colors.black,          // Black text
             ),
           ),
         ],
