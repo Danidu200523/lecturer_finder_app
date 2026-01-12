@@ -20,7 +20,7 @@ class RoleSelectionScreen extends StatelessWidget {
               const Text(
                 'Get Started',
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 49,
                   fontWeight: FontWeight.w500, // Poppins Medium
                   color: AppColors.titleText,
                 ),
@@ -65,7 +65,7 @@ class RoleSelectionScreen extends StatelessWidget {
                         child: const Text(
                           'Lecturer',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 31,
                             fontWeight: FontWeight.w500,
                             color: Colors.white,
                           ),
@@ -92,7 +92,7 @@ class RoleSelectionScreen extends StatelessWidget {
                         child: const Text(
                           'Student',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 31,
                             fontWeight: FontWeight.w500,
                             color: Colors.white,
                           ),
