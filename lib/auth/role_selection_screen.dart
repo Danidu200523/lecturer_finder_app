@@ -54,7 +54,7 @@ class RoleSelectionScreen extends StatelessWidget {
                       height: 56,
                       child: ElevatedButton(
                         onPressed: () {
-                          // TODO: Navigate to Lecturer Login
+                          Navigator.pushNamed(context, '/lecturer-signup');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.blue,

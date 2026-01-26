@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 import 'routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const LecturerFinderApp());
 }
 
@@ -15,7 +24,8 @@ class LecturerFinderApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       initialRoute: '/',
-      routes: AppRoutes.routes, // 👈 APP STARTS HERE
+      routes: AppRoutes.routes,
     );
   }
 }
+
