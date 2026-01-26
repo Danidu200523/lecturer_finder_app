@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "961608516651",
+    "project_id": "lecturerfinder",
+    "storage_bucket": "lecturerfinder.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:961608516651:android:caa463782e7a895054566e",
+        "android_client_info": {
+          "package_name": "com.example.lecturer_finder_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcpkjlHmQOEE8K7oD0RBSBFQHNdX4Hu1I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
