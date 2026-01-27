@@ -54,7 +54,7 @@ class RoleSelectionScreen extends StatelessWidget {
                       height: 56,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/lecturer-signup');
+                          Navigator.pushNamed(context, '/lecturer-login');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.blue,
@@ -81,7 +81,7 @@ class RoleSelectionScreen extends StatelessWidget {
                       height: 56,
                       child: ElevatedButton(
                         onPressed: () {
-                          // TODO: Navigate to Student Login
+                          Navigator.pushNamed(context, '/student-login');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.blue,

@@ -1,27 +1,38 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<User?> signUp(String email, String password) async {
-    final cred = await _auth.createUserWithEmailAndPassword(
+  Future<void> lecturerSignUp({
+    required String name,
+    required String faculty,
+    required String department,
+    required String cabinLocation,
+    required String email,
+    required String password,
+  }) async {
+    // 1. Create Auth account
+    UserCredential userCredential =
+        await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
-    return cred.user;
-  }
 
-  Future<User?> login(String email, String password) async {
-    final cred = await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    return cred.user;
-  }
+    String uid = userCredential.user!.uid;
 
-  User? get currentUser => _auth.currentUser;
-
-  Future<void> logout() async {
-    await _auth.signOut();
+    // 2. Save lecturer data to Firestore
+    await _db.collection('users').doc(uid).set({
+      'uid': uid,
+      'name': name,
+      'faculty': faculty,
+      'department': department,
+      'cabinLocation': cabinLocation,
+      'email': email,
+      'role': 'lecturer',
+      'photoUrl': '',
+      'createdAt': FieldValue.serverTimestamp(),
+    });
   }
 }
