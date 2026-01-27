@@ -33,7 +33,7 @@ class _LecturerLoginScreenState extends State<LecturerLoginScreen> {
             // Title
             const Text(
               "Find My Lecturer",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 49, fontWeight: FontWeight.w500),
             ),
 
             const SizedBox(height: 20),
@@ -51,7 +51,8 @@ class _LecturerLoginScreenState extends State<LecturerLoginScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.blue),
+                color: AppColors.cardbg,
+                border: Border.all(color: AppColors.blue),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -110,7 +111,10 @@ class _LecturerLoginScreenState extends State<LecturerLoginScreen> {
                   // Forgot password
                   TextButton(
                     onPressed: forgotPassword,
-                    child: const Text("Forgot Password?"),
+                    child: const Text(
+                      "Forgot Password?",
+                      style: TextStyle(color: AppColors.titleText),
+                    ),
                   ),
                 ],
               ),
@@ -122,7 +126,10 @@ class _LecturerLoginScreenState extends State<LecturerLoginScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Don’t have an account? "),
+                const Text(
+                  "Don’t have an account? ",
+                  style: TextStyle(color: AppColors.titleText),
+                ),
                 GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(context, '/lecturer-signup');

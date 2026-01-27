@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lecturer_finder_app/core/theme/app_colors.dart';
 
 class LecturerSignUpScreen extends StatefulWidget {
   const LecturerSignUpScreen({super.key});
@@ -39,7 +40,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
   }) {
     return InputDecoration(
       hintText: hint,
-      prefixIcon: Icon(icon, color: Colors.grey),
+      prefixIcon: Icon(icon, color: AppColors.gray),
       border: InputBorder.none,
     );
   }
@@ -90,6 +91,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
+                color: AppColors.cardbg,
                 border: Border.all(color: Colors.blue),
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -103,7 +105,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                         controller: nameController,
                         decoration: _inputDecoration(
                           hint: 'Name',
-                          icon: Icons.person_outline,
+                          icon: Icons.person,
                         ),
                       ),
                     ),
@@ -133,7 +135,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                         initialValue: selectedDepartment,
                         decoration: _inputDecoration(
                           hint: 'Department',
-                          icon: Icons.account_tree_outlined,
+                          icon: Icons.account_tree,
                         ),
                         items: departments
                             .map(
@@ -152,7 +154,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                         controller: cabinController,
                         decoration: _inputDecoration(
                           hint: 'Cabin Location',
-                          icon: Icons.location_on_outlined,
+                          icon: Icons.location_on,
                         ),
                       ),
                     ),
@@ -163,7 +165,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                         controller: emailController,
                         decoration: _inputDecoration(
                           hint: 'University Email',
-                          icon: Icons.email_outlined,
+                          icon: Icons.email,
                         ),
                         keyboardType: TextInputType.emailAddress,
                       ),
@@ -175,7 +177,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                         controller: passwordController,
                         decoration: _inputDecoration(
                           hint: 'Create Password',
-                          icon: Icons.lock_outline,
+                          icon: Icons.lock,
                         ),
                         obscureText: true,
                       ),
