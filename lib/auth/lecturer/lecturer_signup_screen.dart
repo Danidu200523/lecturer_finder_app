@@ -111,7 +111,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                     /// Faculty Dropdown
                     _inputContainer(
                       child: DropdownButtonFormField<String>(
-                        value: selectedFaculty,
+                        initialValue: selectedFaculty,
                         decoration: _inputDecoration(
                           hint: 'Faculty',
                           icon: Icons.apartment,
@@ -130,7 +130,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                     /// Department Dropdown
                     _inputContainer(
                       child: DropdownButtonFormField<String>(
-                        value: selectedDepartment,
+                        initialValue: selectedDepartment,
                         decoration: _inputDecoration(
                           hint: 'Department',
                           icon: Icons.account_tree_outlined,
