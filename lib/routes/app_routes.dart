@@ -9,6 +9,6 @@ class AppRoutes {
     '/': (context) => const SplashScreen(),
     '/onboarding': (context) => const OnboardingScreen(),
     '/role-selection': (context) => const RoleSelectionScreen(),
-    '/lecturer-signup': (context) => const LecturerSignupScreen(),
+    '/lecturer-signup': (context) => const LecturerSignUpScreen(),
   };
 }
