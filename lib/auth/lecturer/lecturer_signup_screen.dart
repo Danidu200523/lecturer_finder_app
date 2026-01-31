@@ -63,7 +63,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: AppColors.gray),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -73,18 +73,18 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
             /// Title
             const Text(
               'Lecturer Sign Up',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 39, fontWeight: FontWeight.w600),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 32),
 
             /// Image
             Image.asset(
               'assets/images/lecturer_signup.png', // use your exact image
-              height: 180,
+              height: 200,
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             /// Form Card
             Container(
@@ -227,7 +227,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                             // 4️⃣ Navigate after success
                             Navigator.pushReplacementNamed(
                               context,
-                              '/lecturer-home',
+                              '/lecturer-status',
                             );
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -239,6 +239,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                         child: const Text(
                           'Sign Up',
                           style: TextStyle(
+                            color: AppColors.whiteText,
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),

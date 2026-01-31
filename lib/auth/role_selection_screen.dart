@@ -31,7 +31,7 @@ class RoleSelectionScreen extends StatelessWidget {
               // Card container
               Container(
                 padding: const EdgeInsets.symmetric(
-                  vertical: 32,
+                  vertical: 45,
                   horizontal: 24,
                 ),
                 decoration: BoxDecoration(
@@ -73,7 +73,7 @@ class RoleSelectionScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 18),
 
                     // Student button
                     SizedBox(
@@ -108,7 +108,7 @@ class RoleSelectionScreen extends StatelessWidget {
               // Illustration
               Image.asset(
                 'assets/images/graduate.png',
-                height: 220,
+                height: 300,
                 fit: BoxFit.contain,
               ),
             ],
