@@ -28,23 +28,23 @@ class _LecturerLoginScreenState extends State<LecturerLoginScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
 
             // Title
             const Text(
               "Find My Lecturer",
-              style: TextStyle(fontSize: 49, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 39, fontWeight: FontWeight.w500),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 32),
 
             // Image
             Image.asset(
               "assets/images/lecturer_login.png", // use your same image
-              height: 220,
+              height: 210,
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             // Card
             Container(
@@ -88,14 +88,16 @@ class _LecturerLoginScreenState extends State<LecturerLoginScreen> {
                     height: 45,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: AppColors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
                       onPressed: isLoading ? null : lecturerLogin,
                       child: isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
+                          ? const CircularProgressIndicator(
+                              color: AppColors.white,
+                            )
                           : const Text(
                               "Log In",
                               style: TextStyle(
@@ -120,7 +122,7 @@ class _LecturerLoginScreenState extends State<LecturerLoginScreen> {
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
 
             // Signup
             Row(
@@ -175,7 +177,7 @@ class _LecturerLoginScreenState extends State<LecturerLoginScreen> {
       }
 
       // ✅ Go to lecturer dashboard
-      Navigator.pushReplacementNamed(context, '/lecturer-home');
+      Navigator.pushReplacementNamed(context, '/lecturer-status');
     } catch (e) {
       ScaffoldMessenger.of(
         context,
