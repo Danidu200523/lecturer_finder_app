@@ -30,6 +30,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.background,
         title: const Text("Manage Time Slots"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -38,7 +39,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.blue,
         child: const Icon(Icons.add),
         onPressed: () {
           Navigator.pushNamed(context, '/add-slot');
@@ -108,6 +109,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
                   time: "$start - $end",
                   status: status,
                   isBooked: status == 'booked',
+                  docId: doc.id,
                   onDelete: () async {
                     await FirebaseFirestore.instance
                         .collection('time_slots')
@@ -128,6 +130,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
     required String date,
     required String time,
     required String status,
+    String? docId,
     String? action,
     bool isHeader = false,
     bool isBooked = false,
@@ -137,7 +140,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.primary),
+        border: Border.all(color: AppColors.darkBlue),
         borderRadius: BorderRadius.circular(10),
       ),
 
@@ -172,7 +175,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -182,7 +185,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Colors.black54,
+                          color: AppColors.gray,
                         ),
                       ),
                     ],
@@ -196,9 +199,9 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
               status,
               style: TextStyle(
                 color: status == 'available'
-                    ? Colors.green
+                    ? AppColors.green
                     : status == 'booked'
-                    ? Colors.blue
+                    ? AppColors.blue
                     : Colors.black,
                 fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
               ),
@@ -207,7 +210,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
 
           /// ACTION
           SizedBox(
-            width: 90, // 👈 FIXED WIDTH PREVENTS OVERFLOW
+            width: 90,
             child: isHeader
                 ? const Text(
                     'Action',
@@ -226,7 +229,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
                     ),
                   )
                 : Row(
-                    mainAxisSize: MainAxisSize.min, // 👈 CRITICAL
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       const SizedBox(width: 30),
                       IconButton(
@@ -234,10 +237,46 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
                         constraints: const BoxConstraints(),
                         icon: const Icon(
                           Icons.delete,
-                          color: Colors.red,
+                          color: AppColors.red,
                           size: 20,
                         ),
-                        onPressed: onDelete,
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text("Delete Time Slot"),
+                              content: const Text(
+                                "Are you sure you want to delete this time slot?",
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
+                                  child: const Text(
+                                    "Cancel",
+                                    style: TextStyle(
+                                      color: AppColors.linkedText,
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: const Text(
+                                    "Delete",
+                                    style: TextStyle(color: AppColors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+
+                          if (confirm == true) {
+                            await FirebaseFirestore.instance
+                                .collection('time_slots')
+                                .doc(docId)
+                                .delete();
+                          }
+                        },
                       ),
                     ],
                   ),
