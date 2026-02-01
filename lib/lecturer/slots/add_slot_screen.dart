@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lecturer_finder_app/core/theme/app_colors.dart';
 
 class AddTimeSlotScreen extends StatefulWidget {
   const AddTimeSlotScreen({super.key});
@@ -10,18 +11,64 @@ class AddTimeSlotScreen extends StatefulWidget {
 }
 
 class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
-  DateTime selectedDate = DateTime.now();
-  TimeOfDay startTime = const TimeOfDay(hour: 12, minute: 30);
-  TimeOfDay endTime = const TimeOfDay(hour: 13, minute: 30);
+  Widget selectBox({
+    required String label,
+    required String value,
+    required VoidCallback onTap,
+    bool selected = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        margin: const EdgeInsets.only(bottom: 14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: selected ? AppColors.primary : Colors.grey.shade300,
+            width: 2,
+          ),
+          color: selected ? AppColors.primary.withOpacity(0.05) : Colors.white,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                color: selected ? AppColors.primary : Colors.grey,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: selected ? AppColors.primary : Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
+  DateTime? selectedDate;
+  TimeOfDay? startTime;
+  TimeOfDay? endTime;
   Future<void> createSlot() async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
 
     await FirebaseFirestore.instance.collection('time_slots').add({
       'lecturerId': uid,
-      'date': '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}',
-      'startTime': startTime.format(context),
-      'endTime': endTime.format(context),
+      'date':
+          '${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}',
+      'startTime': startTime!.format(context),
+      'endTime': endTime!.format(context),
       'status': 'available',
       'createdAt': FieldValue.serverTimestamp(),
     });
@@ -40,62 +87,143 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            ListTile(
-              title: const Text('Date'),
-              trailing: IconButton(
-                icon: const Icon(Icons.calendar_today),
-                onPressed: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: selectedDate,
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(2030),
-                  );
-                  if (picked != null) {
-                    setState(() => selectedDate = picked);
-                  }
-                },
-              ),
+            selectBox(
+              label: "Date",
+              value: selectedDate == null
+                  ? "Select date"
+                  : "${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}",
+              selected: selectedDate != null,
+              onTap: () async {
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: selectedDate ?? DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2100),
+                );
+                if (picked != null) {
+                  setState(() => selectedDate = picked);
+                }
+              },
             ),
-            ListTile(
-              title: const Text('Start Time'),
-              trailing: IconButton(
-                icon: const Icon(Icons.access_time),
-                onPressed: () async {
-                  final picked = await showTimePicker(
-                    context: context,
-                    initialTime: startTime,
-                  );
-                  if (picked != null) {
-                    setState(() => startTime = picked);
-                  }
-                },
-              ),
+
+            selectBox(
+              label: "Start Time",
+              value: startTime == null
+                  ? "Select start time"
+                  : startTime!.format(context),
+              selected: startTime != null,
+              onTap: () async {
+                final picked = await showTimePicker(
+                  context: context,
+                  initialTime: startTime ?? TimeOfDay.now(),
+                );
+                if (picked != null) {
+                  setState(() => startTime = picked);
+                }
+              },
             ),
-            ListTile(
-              title: const Text('End Time'),
-              trailing: IconButton(
-                icon: const Icon(Icons.access_time),
-                onPressed: () async {
-                  final picked = await showTimePicker(
-                    context: context,
-                    initialTime: endTime,
-                  );
-                  if (picked != null) {
-                    setState(() => endTime = picked);
-                  }
-                },
-              ),
+
+            selectBox(
+              label: "End Time",
+              value: endTime == null
+                  ? "Select end time"
+                  : endTime!.format(context),
+              selected: endTime != null,
+              onTap: () async {
+                final picked = await showTimePicker(
+                  context: context,
+                  initialTime: endTime ?? TimeOfDay.now(),
+                );
+                if (picked != null) {
+                  setState(() => endTime = picked);
+                }
+              },
             ),
+
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: createSlot,
-              child: const Text('Create Slot'),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final user = FirebaseAuth.instance.currentUser;
+
+                  if (user == null) return;
+
+                  if (selectedDate == null ||
+                      startTime == null ||
+                      endTime == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Please fill all fields")),
+                    );
+                    return;
+                  }
+
+                  try {
+                    await FirebaseFirestore.instance
+                        .collection('time_slots')
+                        .add({
+                          'lecturerId': user.uid,
+                          'date': selectedDate!
+                              .toIso8601String()
+                              .split('T')
+                              .first,
+                          'startTime': startTime!.format(context),
+                          'endTime': endTime!.format(context),
+                          'status': 'available',
+                          'bookedBy': '',
+                          'createdAt': FieldValue.serverTimestamp(),
+                        });
+
+                    // Go back to slot management screen
+                    Navigator.pop(context);
+                  } catch (e) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(e.toString())));
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(26),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  "Create Slot",
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             ),
+
             const SizedBox(height: 10),
-            OutlinedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppColors.blue),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(26),
+                  ),
+                ),
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.titleText,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
