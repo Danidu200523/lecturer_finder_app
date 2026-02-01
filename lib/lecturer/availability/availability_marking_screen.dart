@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lecturer_finder_app/core/theme/app_colors.dart';
 
 class LecturerStatusScreen extends StatefulWidget {
-  const LecturerStatusScreen({Key? key}) : super(key: key);
+  const LecturerStatusScreen({super.key});
 
   @override
   State<LecturerStatusScreen> createState() => _LecturerStatusScreenState();
@@ -127,7 +127,7 @@ class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
                 /// Add slot
                 OutlinedButton.icon(
                   onPressed: () {
-                    // navigate later
+                    Navigator.pushNamed(context, '/manage-slots');
                   },
                   icon: const Icon(Icons.add, color: AppColors.black),
                   label: const Text(
@@ -135,7 +135,7 @@ class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
                     style: TextStyle(color: AppColors.black),
                   ),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.blue, width: 1),
+                    side: const BorderSide(color: AppColors.blue, width: 1),
                     minimumSize: const Size(double.infinity, 48),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
