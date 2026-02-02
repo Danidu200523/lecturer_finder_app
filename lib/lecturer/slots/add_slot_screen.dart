@@ -11,6 +11,11 @@ class AddTimeSlotScreen extends StatefulWidget {
 }
 
 class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
+  DateTime? selectedDate;
+  TimeOfDay? startTime;
+  TimeOfDay? endTime;
+
+  /// SELECT BOX UI (UNCHANGED)
   Widget selectBox({
     required String label,
     required String value,
@@ -57,19 +62,26 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
     );
   }
 
-  DateTime? selectedDate;
-  TimeOfDay? startTime;
-  TimeOfDay? endTime;
+  /// CREATE SLOT LOGIC (FIXED & SAFE)
   Future<void> createSlot() async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    if (selectedDate == null || startTime == null || endTime == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Please fill all fields")));
+      return;
+    }
 
     await FirebaseFirestore.instance.collection('time_slots').add({
-      'lecturerId': uid,
+      'lecturerId': user.uid,
       'date':
           '${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}',
       'startTime': startTime!.format(context),
       'endTime': endTime!.format(context),
       'status': 'available',
+      'bookedBy': '',
       'createdAt': FieldValue.serverTimestamp(),
     });
 
@@ -81,12 +93,28 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Time Slots'),
-        leading: BackButton(),
+        leading: const BackButton(),
       ),
+
+      /// BODY (STRUCTURE FIXED – UI SAME)
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            const SizedBox(height: 20),
+
+            /// IMAGE (YOUR IMAGE ONLY)
+            Center(
+              child: Image.asset(
+                'assets/images/slot.png',
+                width: 240,
+                fit: BoxFit.contain,
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            /// DATE
             selectBox(
               label: "Date",
               value: selectedDate == null
@@ -106,6 +134,7 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
               },
             ),
 
+            /// START TIME
             selectBox(
               label: "Start Time",
               value: startTime == null
@@ -123,6 +152,7 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
               },
             ),
 
+            /// END TIME
             selectBox(
               label: "End Time",
               value: endTime == null
@@ -141,48 +171,13 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
             ),
 
             const SizedBox(height: 30),
+
+            /// CREATE BUTTON
             SizedBox(
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: () async {
-                  final user = FirebaseAuth.instance.currentUser;
-
-                  if (user == null) return;
-
-                  if (selectedDate == null ||
-                      startTime == null ||
-                      endTime == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Please fill all fields")),
-                    );
-                    return;
-                  }
-
-                  try {
-                    await FirebaseFirestore.instance
-                        .collection('time_slots')
-                        .add({
-                          'lecturerId': user.uid,
-                          'date': selectedDate!
-                              .toIso8601String()
-                              .split('T')
-                              .first,
-                          'startTime': startTime!.format(context),
-                          'endTime': endTime!.format(context),
-                          'status': 'available',
-                          'bookedBy': '',
-                          'createdAt': FieldValue.serverTimestamp(),
-                        });
-
-                    // Go back to slot management screen
-                    Navigator.pop(context);
-                  } catch (e) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(e.toString())));
-                  }
-                },
+                onPressed: createSlot,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.blue,
                   shape: RoundedRectangleBorder(
@@ -202,13 +197,13 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
             ),
 
             const SizedBox(height: 10),
+
+            /// CANCEL BUTTON
             SizedBox(
               width: double.infinity,
               height: 52,
               child: OutlinedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: () => Navigator.pop(context),
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: AppColors.blue),
                   shape: RoundedRectangleBorder(
