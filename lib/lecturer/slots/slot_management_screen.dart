@@ -117,7 +117,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
                         .delete();
                   },
                 );
-              }).toList(),
+              }),
             ],
           );
         },
