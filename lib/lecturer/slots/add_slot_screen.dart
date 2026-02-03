@@ -21,6 +21,7 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
     required String value,
     required VoidCallback onTap,
     bool selected = false,
+    IconData? icon,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -31,10 +32,10 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected ? AppColors.primary : Colors.grey.shade300,
+            color: selected ? AppColors.darkBlue : Colors.grey.shade300,
             width: 2,
           ),
-          color: selected ? AppColors.primary.withOpacity(0.05) : Colors.white,
+          color: selected ? AppColors.blue.withOpacity(0.05) : AppColors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,7 +44,7 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
               label,
               style: TextStyle(
                 fontSize: 13,
-                color: selected ? AppColors.primary : Colors.grey,
+                color: selected ? AppColors.darkBlue : Colors.grey,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -52,8 +53,8 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
               value,
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: selected ? AppColors.primary : Colors.black,
+                fontWeight: FontWeight.w500,
+                color: selected ? AppColors.darkBlue : Colors.black,
               ),
             ),
           ],
@@ -97,130 +98,132 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
       ),
 
       /// BODY (STRUCTURE FIXED – UI SAME)
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
 
-            /// IMAGE (YOUR IMAGE ONLY)
-            Center(
-              child: Image.asset(
-                'assets/images/slot.png',
-                width: 240,
-                fit: BoxFit.contain,
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            /// DATE
-            selectBox(
-              label: "Date",
-              value: selectedDate == null
-                  ? "Select date"
-                  : "${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}",
-              selected: selectedDate != null,
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: selectedDate ?? DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2100),
-                );
-                if (picked != null) {
-                  setState(() => selectedDate = picked);
-                }
-              },
-            ),
-
-            /// START TIME
-            selectBox(
-              label: "Start Time",
-              value: startTime == null
-                  ? "Select start time"
-                  : startTime!.format(context),
-              selected: startTime != null,
-              onTap: () async {
-                final picked = await showTimePicker(
-                  context: context,
-                  initialTime: startTime ?? TimeOfDay.now(),
-                );
-                if (picked != null) {
-                  setState(() => startTime = picked);
-                }
-              },
-            ),
-
-            /// END TIME
-            selectBox(
-              label: "End Time",
-              value: endTime == null
-                  ? "Select end time"
-                  : endTime!.format(context),
-              selected: endTime != null,
-              onTap: () async {
-                final picked = await showTimePicker(
-                  context: context,
-                  initialTime: endTime ?? TimeOfDay.now(),
-                );
-                if (picked != null) {
-                  setState(() => endTime = picked);
-                }
-              },
-            ),
-
-            const SizedBox(height: 30),
-
-            /// CREATE BUTTON
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: createSlot,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  "Create Slot",
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+              /// IMAGE (YOUR IMAGE ONLY)
+              Center(
+                child: Image.asset(
+                  'assets/images/slot.png',
+                  width: 240,
+                  fit: BoxFit.contain,
                 ),
               ),
-            ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 24),
 
-            /// CANCEL BUTTON
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: OutlinedButton(
-                onPressed: () => Navigator.pop(context),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppColors.blue),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
+              /// DATE
+              selectBox(
+                label: "Date",
+                value: selectedDate == null
+                    ? "Select date"
+                    : "${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}",
+                selected: selectedDate != null,
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: selectedDate ?? DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2100),
+                  );
+                  if (picked != null) {
+                    setState(() => selectedDate = picked);
+                  }
+                },
+              ),
+
+              /// START TIME
+              selectBox(
+                label: "Start Time",
+                value: startTime == null
+                    ? "Select start time"
+                    : startTime!.format(context),
+                selected: startTime != null,
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: startTime ?? TimeOfDay.now(),
+                  );
+                  if (picked != null) {
+                    setState(() => startTime = picked);
+                  }
+                },
+              ),
+
+              /// END TIME
+              selectBox(
+                label: "End Time",
+                value: endTime == null
+                    ? "Select end time"
+                    : endTime!.format(context),
+                selected: endTime != null,
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: endTime ?? TimeOfDay.now(),
+                  );
+                  if (picked != null) {
+                    setState(() => endTime = picked);
+                  }
+                },
+              ),
+
+              const SizedBox(height: 30),
+
+              /// CREATE BUTTON
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: createSlot,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                    elevation: 0,
                   ),
-                ),
-                child: const Text(
-                  "Cancel",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.titleText,
+                  child: const Text(
+                    "Create Slot",
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 10),
+
+              /// CANCEL BUTTON
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: AppColors.blue),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                  ),
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.titleText,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
