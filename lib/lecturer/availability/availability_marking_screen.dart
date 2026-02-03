@@ -147,7 +147,7 @@ class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
 
                 TextButton(
                   onPressed: () {
-                    // edit profile later
+                    Navigator.pushNamed(context, '/edit-profile');
                   },
                   child: const Text(
                     'Edit profile',
