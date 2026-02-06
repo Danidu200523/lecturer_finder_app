@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lecturer_finder_app/auth/lecturer/lecturer_login_screen.dart';
+import 'package:lecturer_finder_app/lecturer/logout/lecturer_logout_screen.dart';
 import 'package:lecturer_finder_app/lecturer/profile/edit_lecturer_profile_screen.dart'
     show EditProfileScreen;
 import 'package:lecturer_finder_app/lecturer/slots/add_slot_screen.dart';
@@ -21,5 +22,6 @@ class AppRoutes {
     '/manage-slots': (context) => const SlotManagementScreen(),
     '/add-slot': (context) => const AddTimeSlotScreen(),
     '/edit-profile': (context) => const EditProfileScreen(),
+    '/lecturer-logout': (context) => LecturerLogoutScreen(),
   };
 }
