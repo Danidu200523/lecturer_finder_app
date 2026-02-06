@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lecturer_finder_app/core/theme/app_colors.dart';
+import 'package:flutter/painting.dart';
 
 class LecturerStatusScreen extends StatefulWidget {
   const LecturerStatusScreen({super.key});
@@ -12,6 +13,14 @@ class LecturerStatusScreen extends StatefulWidget {
 
 class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
   final String uid = FirebaseAuth.instance.currentUser!.uid;
+  @override
+  void initState() {
+    super.initState();
+
+    // 🔥 FORCE clear image cache (FIXES Flutter Web broken image issue)
+    PaintingBinding.instance.imageCache.clear();
+    PaintingBinding.instance.imageCache.clearLiveImages();
+  }
 
   /// Update status directly to Firestore
   Future<void> updateStatus(String status) async {
@@ -47,17 +56,28 @@ class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
           final String department = data['department'] ?? '';
           final String cabin = data['cabinLocation'] ?? '';
           final String status = data['status'] ?? 'available';
-          final String photoUrl =
-              data['photoUrl'] ?? 'https://via.placeholder.com/150';
+          final String photoUrl = (data['photoUrl'] ?? '').toString();
+
+          print('STATUS SCREEN PHOTO URL => $photoUrl');
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
                 /// Profile image
-                CircleAvatar(
-                  radius: 55,
-                  backgroundImage: NetworkImage(photoUrl),
+                ClipOval(
+                  child: Container(
+                    width: 110,
+                    height: 110,
+                    color: Colors.grey.shade200,
+                    child: photoUrl.isNotEmpty
+                        ? Image.network(
+                            photoUrl,
+                            key: ValueKey(photoUrl), // 🔥 THIS IS THE FIX
+                            fit: BoxFit.cover,
+                          )
+                        : const Icon(Icons.person, size: 50),
+                  ),
                 ),
 
                 const SizedBox(height: 12),
