@@ -5,6 +5,9 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
+  // ===============================
+  // LECTURER SIGN UP (EXISTING)
+  // ===============================
   Future<void> lecturerSignUp({
     required String name,
     required String faculty,
@@ -13,16 +16,13 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    // 1. Create Auth account
-    UserCredential userCredential =
-        await _auth.createUserWithEmailAndPassword(
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
 
     String uid = userCredential.user!.uid;
 
-    // 2. Save lecturer data to Firestore
     await _db.collection('users').doc(uid).set({
       'uid': uid,
       'name': name,
@@ -35,4 +35,16 @@ class AuthService {
       'createdAt': FieldValue.serverTimestamp(),
     });
   }
+
+  // ===============================
+  // LECTURER LOGOUT (BACKEND)
+  // ===============================
+  Future<void> lecturerLogout() async {
+    await _auth.signOut();
+  }
+
+  // ===============================
+  // GET CURRENT USER (OPTIONAL BUT IMPORTANT)
+  // ===============================
+  User? get currentUser => _auth.currentUser;
 }

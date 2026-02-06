@@ -176,6 +176,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           style: TextStyle(color: AppColors.black),
         ),
         leading: const BackButton(),
+        iconTheme: const IconThemeData(color: AppColors.black),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              Navigator.pushNamed(context, '/lecturer-logout');
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
