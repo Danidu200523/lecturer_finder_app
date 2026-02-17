@@ -10,6 +10,7 @@ import '../splash/splash_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../auth/role_selection_screen.dart';
 import '../lecturer/availability/availability_marking_screen.dart';
+import '../auth/student/student_login_screen.dart'; //  student routes
 
 class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
@@ -23,5 +24,11 @@ class AppRoutes {
     '/add-slot': (context) => const AddTimeSlotScreen(),
     '/edit-profile': (context) => const EditProfileScreen(),
     '/lecturer-logout': (context) => LecturerLogoutScreen(),
+
+     //student routes
+
+    '/student-login': (context) => const StudentLoginScreen(), 
+   
+
   };
 }
