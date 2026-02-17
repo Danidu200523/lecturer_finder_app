@@ -11,6 +11,7 @@ import '../onboarding/onboarding_screen.dart';
 import '../auth/role_selection_screen.dart';
 import '../lecturer/availability/availability_marking_screen.dart';
 import '../auth/student/student_login_screen.dart'; //  student routes
+import '../auth/student/student_signup_screen.dart';
 
 class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
@@ -25,10 +26,8 @@ class AppRoutes {
     '/edit-profile': (context) => const EditProfileScreen(),
     '/lecturer-logout': (context) => LecturerLogoutScreen(),
 
-     //student routes
-
-    '/student-login': (context) => const StudentLoginScreen(), 
-   
-
+    //student routes
+    '/student-login': (context) => const StudentLoginScreen(),
+    '/student-signup': (context) => const StudentSignUpScreen(),
   };
 }
