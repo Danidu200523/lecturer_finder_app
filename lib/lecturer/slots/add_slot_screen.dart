@@ -34,7 +34,9 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
             color: selected ? AppColors.primary : Colors.grey.shade300,
             width: 2,
           ),
-          color: selected ? AppColors.primary.withOpacity(0.05) : Colors.white,
+          color: selected
+              ? AppColors.primary.withOpacity(0.05)
+              : Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,15 +64,15 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
     );
   }
 
-  /// CREATE SLOT LOGIC (FIXED & SAFE)
+  /// CREATE SLOT LOGIC
   Future<void> createSlot() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
     if (selectedDate == null || startTime == null || endTime == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Please fill all fields")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all fields")),
+      );
       return;
     }
 
@@ -85,6 +87,7 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
       'createdAt': FieldValue.serverTimestamp(),
     });
 
+    if (!mounted) return;
     Navigator.pop(context);
   }
 
@@ -96,131 +99,135 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
         leading: const BackButton(),
       ),
 
-      /// BODY (STRUCTURE FIXED – UI SAME)
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
+      /// ✅ SCROLL FIX ADDED HERE
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
 
-            /// IMAGE (YOUR IMAGE ONLY)
-            Center(
-              child: Image.asset(
-                'assets/images/slot.png',
-                width: 240,
-                fit: BoxFit.contain,
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            /// DATE
-            selectBox(
-              label: "Date",
-              value: selectedDate == null
-                  ? "Select date"
-                  : "${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}",
-              selected: selectedDate != null,
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: selectedDate ?? DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2100),
-                );
-                if (picked != null) {
-                  setState(() => selectedDate = picked);
-                }
-              },
-            ),
-
-            /// START TIME
-            selectBox(
-              label: "Start Time",
-              value: startTime == null
-                  ? "Select start time"
-                  : startTime!.format(context),
-              selected: startTime != null,
-              onTap: () async {
-                final picked = await showTimePicker(
-                  context: context,
-                  initialTime: startTime ?? TimeOfDay.now(),
-                );
-                if (picked != null) {
-                  setState(() => startTime = picked);
-                }
-              },
-            ),
-
-            /// END TIME
-            selectBox(
-              label: "End Time",
-              value: endTime == null
-                  ? "Select end time"
-                  : endTime!.format(context),
-              selected: endTime != null,
-              onTap: () async {
-                final picked = await showTimePicker(
-                  context: context,
-                  initialTime: endTime ?? TimeOfDay.now(),
-                );
-                if (picked != null) {
-                  setState(() => endTime = picked);
-                }
-              },
-            ),
-
-            const SizedBox(height: 30),
-
-            /// CREATE BUTTON
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: createSlot,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  "Create Slot",
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+              /// IMAGE
+              Center(
+                child: Image.asset(
+                  'assets/images/slot.png',
+                  width: 240,
+                  fit: BoxFit.contain,
                 ),
               ),
-            ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 24),
 
-            /// CANCEL BUTTON
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: OutlinedButton(
-                onPressed: () => Navigator.pop(context),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppColors.blue),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
+              /// DATE
+              selectBox(
+                label: "Date",
+                value: selectedDate == null
+                    ? "Select date"
+                    : "${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}",
+                selected: selectedDate != null,
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: selectedDate ?? DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2100),
+                  );
+                  if (picked != null) {
+                    setState(() => selectedDate = picked);
+                  }
+                },
+              ),
+
+              /// START TIME
+              selectBox(
+                label: "Start Time",
+                value: startTime == null
+                    ? "Select start time"
+                    : startTime!.format(context),
+                selected: startTime != null,
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: startTime ?? TimeOfDay.now(),
+                  );
+                  if (picked != null) {
+                    setState(() => startTime = picked);
+                  }
+                },
+              ),
+
+              /// END TIME
+              selectBox(
+                label: "End Time",
+                value: endTime == null
+                    ? "Select end time"
+                    : endTime!.format(context),
+                selected: endTime != null,
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: endTime ?? TimeOfDay.now(),
+                  );
+                  if (picked != null) {
+                    setState(() => endTime = picked);
+                  }
+                },
+              ),
+
+              const SizedBox(height: 30),
+
+              /// CREATE BUTTON
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: createSlot,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                    elevation: 0,
                   ),
-                ),
-                child: const Text(
-                  "Cancel",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.titleText,
+                  child: const Text(
+                    "Create Slot",
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 10),
+
+              /// CANCEL BUTTON
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: AppColors.blue),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                  ),
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.titleText,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
