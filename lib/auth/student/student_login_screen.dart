@@ -49,7 +49,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
         context,
-        '/student-home',
+        '/student-search',
         (route) => false,
       );
     } on FirebaseAuthException catch (e) {
