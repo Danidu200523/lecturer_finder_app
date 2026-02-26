@@ -12,6 +12,7 @@ import '../auth/role_selection_screen.dart';
 import '../lecturer/availability/availability_marking_screen.dart';
 import '../auth/student/student_login_screen.dart'; //  student routes
 import '../auth/student/student_signup_screen.dart';
+import '../student/search/lecturer_search_screen.dart';
 
 class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
@@ -29,5 +30,6 @@ class AppRoutes {
     //student routes
     '/student-login': (context) => const StudentLoginScreen(),
     '/student-signup': (context) => const StudentSignUpScreen(),
+    '/student-search': (context) => const StudentSearchScreen(),
   };
 }

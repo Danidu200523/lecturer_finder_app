@@ -218,7 +218,7 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
 
                     _inputField(
                       controller: _universityController,
-                      icon: Icons.account_balance,
+                      icon: Icons.apartment,
                       hint: "University",
                     ),
 
