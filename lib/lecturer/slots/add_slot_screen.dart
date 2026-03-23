@@ -63,7 +63,8 @@ class _AddTimeSlotScreenState extends State<AddTimeSlotScreen> {
     );
   }
 
-  /// CREATE SLOT LOGIC (FIXED & SAFE)
+  //CREATE SLOT LOGIC 
+
   Future<void> createSlot() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;

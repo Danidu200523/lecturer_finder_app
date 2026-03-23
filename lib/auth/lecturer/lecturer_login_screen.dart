@@ -152,7 +152,8 @@ class _LecturerLoginScreenState extends State<LecturerLoginScreen> {
     );
   }
 
-  // 🔥 LOGIN FUNCTION
+  // LOGIN FUNCTION
+
   Future<void> lecturerLogin() async {
     setState(() => isLoading = true);
 
@@ -165,7 +166,7 @@ class _LecturerLoginScreenState extends State<LecturerLoginScreen> {
 
       String uid = userCredential.user!.uid;
 
-      // 🔍 Check role
+      //  Check role
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
@@ -176,7 +177,7 @@ class _LecturerLoginScreenState extends State<LecturerLoginScreen> {
         throw "Not a lecturer account";
       }
 
-      // ✅ Go to lecturer dashboard
+      //  Go to lecturer dashboard
       Navigator.pushReplacementNamed(context, '/lecturer-status');
     } catch (e) {
       ScaffoldMessenger.of(

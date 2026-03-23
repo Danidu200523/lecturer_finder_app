@@ -17,12 +17,10 @@ class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
   void initState() {
     super.initState();
 
-    // 🔥 FORCE clear image cache (FIXES Flutter Web broken image issue)
     PaintingBinding.instance.imageCache.clear();
     PaintingBinding.instance.imageCache.clearLiveImages();
   }
 
-  /// Update status directly to Firestore
   Future<void> updateStatus(String status) async {
     await FirebaseFirestore.instance.collection('users').doc(uid).update({
       'status': status,
@@ -64,7 +62,6 @@ class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                /// Profile image
                 ClipOval(
                   child: Container(
                     width: 110,
@@ -73,7 +70,7 @@ class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
                     child: photoUrl.isNotEmpty
                         ? Image.network(
                             photoUrl,
-                            key: ValueKey(photoUrl), // 🔥 THIS IS THE FIX
+                            key: ValueKey(photoUrl),
                             fit: BoxFit.cover,
                           )
                         : const Icon(Icons.person, size: 50),
@@ -82,7 +79,7 @@ class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
 
                 const SizedBox(height: 12),
 
-                /// Name
+                // Name
                 Text(
                   name,
                   style: const TextStyle(
@@ -117,7 +114,6 @@ class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
 
                 const SizedBox(height: 14),
 
-                /// STATUS BUTTONS
                 statusButton(
                   label: 'Available at Cabin',
                   value: 'available',
@@ -144,7 +140,6 @@ class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
 
                 const SizedBox(height: 20),
 
-                /// Add slot
                 OutlinedButton.icon(
                   onPressed: () {
                     Navigator.pushNamed(context, '/manage-slots');
@@ -182,7 +177,6 @@ class _LecturerStatusScreenState extends State<LecturerStatusScreen> {
     );
   }
 
-  /// Reusable status button with outline for selected state
   Widget statusButton({
     required String label,
     required String value,
