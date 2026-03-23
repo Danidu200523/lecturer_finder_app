@@ -198,7 +198,8 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                         ),
                         onPressed: () async {
                           try {
-                            // 1️⃣ Create user with Firebase Authentication
+                            // Create user with Firebase Authentication
+
                             UserCredential userCredential = await FirebaseAuth
                                 .instance
                                 .createUserWithEmailAndPassword(
@@ -206,10 +207,11 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                                   password: passwordController.text.trim(),
                                 );
 
-                            // 2️⃣ Get user UID
+                            //Get user UID
+
                             String uid = userCredential.user!.uid;
 
-                            // 3️⃣ Save lecturer data to Firestore
+                            // Save lecturer data to Firestore
                             await FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(uid)
@@ -224,7 +226,8 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                                   'createdAt': FieldValue.serverTimestamp(),
                                 });
 
-                            // 4️⃣ Navigate after success
+                            //Navigate after success
+
                             Navigator.pushReplacementNamed(
                               context,
                               '/lecturer-status',

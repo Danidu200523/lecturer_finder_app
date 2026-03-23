@@ -17,7 +17,6 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
 
   final String studentId = FirebaseAuth.instance.currentUser!.uid;
 
-  /// TOGGLE FAVORITE
   Future<void> toggleFavorite(String lecturerId, bool isFav) async {
     final favRef = FirebaseFirestore.instance.collection('favorites');
 
@@ -39,7 +38,6 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
     }
   }
 
-  /// CHECK IF FAVORITE
   Stream<bool> isFavorite(String lecturerId) {
     return FirebaseFirestore.instance
         .collection('favorites')
@@ -72,15 +70,12 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
           child: Column(
             children: [
               const SizedBox(height: 10),
-
               const Text(
                 "Search for Lecturers",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
               ),
-
               const SizedBox(height: 20),
 
-              /// SEARCH BAR
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 decoration: BoxDecoration(
@@ -149,9 +144,9 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 16),
 
-              /// LECTURER LIST
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -159,12 +154,10 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                       .where('role', isEqualTo: 'lecturer')
                       .snapshots(),
                   builder: (context, snapshot) {
-                    /// 🔥 FIX 1 — HANDLE WAITING STATE
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
-                    /// 🔥 FIX 2 — HANDLE ERROR
                     if (snapshot.hasError) {
                       return Center(
                         child: Text(
@@ -174,7 +167,6 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                       );
                     }
 
-                    /// 🔥 FIX 3 — HANDLE EMPTY
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                       return const Center(child: Text("No lecturers found"));
                     }
@@ -201,8 +193,17 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                               decoration: BoxDecoration(
                                 color: AppColors.background,
                                 borderRadius: BorderRadius.circular(16),
+
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.06),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+
                                 border: Border.all(
-                                  color: AppColors.gray.withOpacity(0.5),
+                                  color: AppColors.gray.withOpacity(0.3),
                                 ),
                               ),
                               child: Row(

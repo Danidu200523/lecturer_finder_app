@@ -63,7 +63,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (mounted) setState(() => _loading = false);
   }
 
-  // ---------------- PICK IMAGE ----------------
+  //  PICK IMAGE
   Future<void> _pickImage() async {
     final picked = await ImagePicker().pickImage(
       source: ImageSource.gallery,
@@ -83,7 +83,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {});
   }
 
-  // ---------------- UPLOAD IMAGE ----------------
+  //  UPLOAD IMAGE
+  
   Future<String?> _uploadImage() async {
     if (_image == null && _webImageBytes == null) return _photoUrl;
 
@@ -104,7 +105,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return await snap.ref.getDownloadURL();
   }
 
-  // ---------------- SAVE PROFILE ----------------
+  // SAVE PROFILE                              
   Future<void> _saveProfile() async {
     try {
       setState(() => _saving = true);
@@ -126,7 +127,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  // ---------------- UI HELPERS ----------------
+  //  UI HELPERS 
   Widget _editRow({
     required IconData icon,
     required TextEditingController controller,
@@ -160,7 +161,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  // ---------------- UI ----------------
+  // UI
   @override
   Widget build(BuildContext context) {
     if (_loading) {
