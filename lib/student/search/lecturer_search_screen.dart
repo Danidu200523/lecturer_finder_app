@@ -187,77 +187,91 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                           builder: (context, favSnapshot) {
                             final isFav = favSnapshot.data ?? false;
 
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 14),
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: AppColors.background,
-                                borderRadius: BorderRadius.circular(16),
-
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.06),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
+                            return InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/lecturer-availability',
+                                  arguments: lecturerId,
+                                );
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(bottom: 14),
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  color: AppColors.background,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.06),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                  border: Border.all(
+                                    color: AppColors.gray.withOpacity(0.3),
                                   ),
-                                ],
-
-                                border: Border.all(
-                                  color: AppColors.gray.withOpacity(0.3),
                                 ),
-                              ),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage:
-                                        (doc['photoUrl'] != null &&
-                                            doc['photoUrl']
-                                                .toString()
-                                                .isNotEmpty)
-                                        ? NetworkImage(doc['photoUrl'])
-                                        : null,
-                                    child:
-                                        (doc['photoUrl'] == null ||
-                                            doc['photoUrl'].toString().isEmpty)
-                                        ? const Icon(Icons.person)
-                                        : null,
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          doc['name'] ?? "",
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Text(
-                                          doc['department'] ?? "",
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 30,
+                                      backgroundImage:
+                                          (doc['photoUrl'] != null &&
+                                                  doc['photoUrl']
+                                                      .toString()
+                                                      .isNotEmpty)
+                                              ? NetworkImage(doc['photoUrl'])
+                                              : null,
+                                      child:
+                                          (doc['photoUrl'] == null ||
+                                                  doc['photoUrl']
+                                                      .toString()
+                                                      .isEmpty)
+                                              ? const Icon(Icons.person)
+                                              : null,
                                     ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(
-                                      isFav ? Icons.star : Icons.star_border,
-                                      color: isFav
-                                          ? AppColors.yellow
-                                          : AppColors.gray,
+                                    const SizedBox(width: 14),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            doc['name'] ?? "",
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          Text(
+                                            doc['department'] ?? "",
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    onPressed: () {
-                                      toggleFavorite(lecturerId, isFav);
-                                    },
-                                  ),
-                                ],
+
+                                    // ⭐ keep UI SAME, only prevent tap conflict
+                                    GestureDetector(
+                                      onTap: () {
+                                        toggleFavorite(lecturerId, isFav);
+                                      },
+                                      child: Icon(
+                                        isFav
+                                            ? Icons.star
+                                            : Icons.star_border,
+                                        color: isFav
+                                            ? AppColors.yellow
+                                            : AppColors.gray,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           },

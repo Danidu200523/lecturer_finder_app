@@ -14,6 +14,7 @@ import '../auth/student/student_login_screen.dart'; //  student routes
 import '../auth/student/student_signup_screen.dart';
 import '../student/search/lecturer_search_screen.dart';
 import '../student/favorites/favorite_lecturers_screen.dart';
+import '../student/booking/lecturer_availability_screen.dart';
 
 
 class AppRoutes {
@@ -34,5 +35,6 @@ class AppRoutes {
     '/student-signup': (context) => const StudentSignUpScreen(),
     '/student-search': (context) => const StudentSearchScreen(),
     '/student-favorites': (context) => const StudentFavoritesScreen(),
+    '/lecturer-availability': (context) => const LecturerAvailabilityScreen(),
   };
 }
