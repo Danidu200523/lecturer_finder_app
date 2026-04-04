@@ -37,7 +37,6 @@ class LecturerAvailabilityScreen extends StatelessWidget {
 
           final data = snapshot.data!.data() as Map<String, dynamic>;
 
-          
           final status = data['status'] ?? 'away';
 
           Color statusColor;
@@ -75,14 +74,14 @@ class LecturerAvailabilityScreen extends StatelessWidget {
                   backgroundColor: Colors.blue.shade100,
                   backgroundImage:
                       (data['photoUrl'] != null &&
-                          data['photoUrl'].toString().isNotEmpty)
-                      ? NetworkImage(data['photoUrl'])
-                      : null,
+                              data['photoUrl'].toString().isNotEmpty)
+                          ? NetworkImage(data['photoUrl'])
+                          : null,
                   child:
                       (data['photoUrl'] == null ||
-                          data['photoUrl'].toString().isEmpty)
-                      ? const Icon(Icons.person, size: 40)
-                      : null,
+                              data['photoUrl'].toString().isEmpty)
+                          ? const Icon(Icons.person, size: 40)
+                          : null,
                 ),
 
                 const SizedBox(height: 12),
@@ -92,17 +91,20 @@ class LecturerAvailabilityScreen extends StatelessWidget {
                   data['name'] ?? "",
                   style: const TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
 
                 
                 Text(
                   data['department'] ?? "",
-                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.subtitleText,
+                  ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 22),
 
                 
                 _infoBox(
@@ -111,54 +113,65 @@ class LecturerAvailabilityScreen extends StatelessWidget {
                       "${data['faculty'] ?? ''}, ${data['cabinLocation'] ?? ''}",
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
 
-                
+                // 📧 CONTACT
                 _infoBox(
                   title: "Contact",
                   value: data['email'] ?? "Not available",
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 22),
 
                
                 SizedBox(
                   width: double.infinity,
-                  height: 45,
+                  height: 48,
                   child: OutlinedButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Icons.add),
-                    label: const Text("Book a Meeting"),
+                    icon: Icon(Icons.add, color: AppColors.black,),
+                    label: const Text(
+                      "Book a Meeting",
+                      style: TextStyle(color: AppColors.black),
+                    ),
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      side: const BorderSide(color: Colors.blue),
+                      side: const BorderSide(color: AppColors.blue),
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
 
                 
                 Container(
                   width: double.infinity,
-                  height: 50,
+                  height: 99, 
                   decoration: BoxDecoration(
                     color: statusColor,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: statusColor.withOpacity(0.25),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
                   child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(statusIcon, color: Colors.white, size: 18),
-                        const SizedBox(width: 6),
+                        Icon(statusIcon, color: AppColors.white, size: 20),
+                        const SizedBox(width: 8),
                         Text(
                           statusText,
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: AppColors.white,
                             fontWeight: FontWeight.w500,
+                            fontSize: 14,
                           ),
                         ),
                       ],
@@ -173,21 +186,40 @@ class LecturerAvailabilityScreen extends StatelessWidget {
     );
   }
 
-
+  
   Widget _infoBox({required String title, required String value}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-          const SizedBox(height: 4),
-          Text(value, style: const TextStyle(color: Colors.black54)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+              color: AppColors.black, 
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppColors.black, 
+              fontSize: 13,
+            ),
+          ),
         ],
       ),
     );
