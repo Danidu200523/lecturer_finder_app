@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import './slot_booking_screen.dart';
 
 class LecturerAvailabilityScreen extends StatelessWidget {
   const LecturerAvailabilityScreen({super.key});
@@ -125,23 +126,32 @@ class LecturerAvailabilityScreen extends StatelessWidget {
 
                
                 SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.add, color: AppColors.black,),
-                    label: const Text(
-                      "Book a Meeting",
-                      style: TextStyle(color: AppColors.black),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      side: const BorderSide(color: AppColors.blue),
-                    ),
-                  ),
-                ),
+  width: double.infinity,
+  height: 48,
+  child: OutlinedButton.icon(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SlotBookingScreen(
+            lecturerId: lecturerId, // ✅ pass lecturer id
+          ),
+        ),
+      );
+    },
+    icon: const Icon(Icons.add, color: AppColors.black),
+    label: const Text(
+      "Book a Meeting",
+      style: TextStyle(color: AppColors.black),
+    ),
+    style: OutlinedButton.styleFrom(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      side: const BorderSide(color: AppColors.blue),
+    ),
+  ),
+),
 
                 const SizedBox(height: 14),
 
