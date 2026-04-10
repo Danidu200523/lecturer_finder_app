@@ -15,6 +15,7 @@ import '../auth/student/student_signup_screen.dart';
 import '../student/search/lecturer_search_screen.dart';
 import '../student/favorites/favorite_lecturers_screen.dart';
 import '../student/booking/lecturer_availability_screen.dart';
+import '../student/booking/slot_booking_screen.dart';
 
 
 class AppRoutes {
@@ -36,5 +37,6 @@ class AppRoutes {
     '/student-search': (context) => const StudentSearchScreen(),
     '/student-favorites': (context) => const StudentFavoritesScreen(),
     '/lecturer-availability': (context) => const LecturerAvailabilityScreen(),
+    '/slot-booking': (context) => const SlotBookingScreen(lecturerId: ""),
   };
 }
