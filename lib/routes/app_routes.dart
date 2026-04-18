@@ -16,7 +16,7 @@ import '../student/search/lecturer_search_screen.dart';
 import '../student/favorites/favorite_lecturers_screen.dart';
 import '../student/booking/lecturer_availability_screen.dart';
 import '../student/booking/slot_booking_screen.dart';
-
+import '../student/profile/student_profile_screen.dart';
 
 class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
@@ -38,5 +38,6 @@ class AppRoutes {
     '/student-favorites': (context) => const StudentFavoritesScreen(),
     '/lecturer-availability': (context) => const LecturerAvailabilityScreen(),
     '/slot-booking': (context) => const SlotBookingScreen(lecturerId: ""),
+    '/student-profile': (context) => const StudentProfileScreen(),
   };
 }
