@@ -219,18 +219,18 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                                       radius: 30,
                                       backgroundImage:
                                           (doc['photoUrl'] != null &&
-                                                  doc['photoUrl']
-                                                      .toString()
-                                                      .isNotEmpty)
-                                              ? NetworkImage(doc['photoUrl'])
-                                              : null,
+                                              doc['photoUrl']
+                                                  .toString()
+                                                  .isNotEmpty)
+                                          ? NetworkImage(doc['photoUrl'])
+                                          : null,
                                       child:
                                           (doc['photoUrl'] == null ||
-                                                  doc['photoUrl']
-                                                      .toString()
-                                                      .isEmpty)
-                                              ? const Icon(Icons.person)
-                                              : null,
+                                              doc['photoUrl']
+                                                  .toString()
+                                                  .isEmpty)
+                                          ? const Icon(Icons.person)
+                                          : null,
                                     ),
                                     const SizedBox(width: 14),
                                     Expanded(
@@ -256,15 +256,12 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                                       ),
                                     ),
 
-                                    // ⭐ keep UI SAME, only prevent tap conflict
                                     GestureDetector(
                                       onTap: () {
                                         toggleFavorite(lecturerId, isFav);
                                       },
                                       child: Icon(
-                                        isFav
-                                            ? Icons.star
-                                            : Icons.star_border,
+                                        isFav ? Icons.star : Icons.star_border,
                                         color: isFav
                                             ? AppColors.yellow
                                             : AppColors.gray,
