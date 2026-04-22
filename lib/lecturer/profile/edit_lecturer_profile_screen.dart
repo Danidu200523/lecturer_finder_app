@@ -10,14 +10,14 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:lecturer_finder_app/core/theme/app_colors.dart';
 
-class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+class LecturerEditProfileScreen extends StatefulWidget {
+  const LecturerEditProfileScreen({super.key});
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  State<LecturerEditProfileScreen> createState() => _LecturerEditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _LecturerEditProfileScreenState extends State<LecturerEditProfileScreen> {
   // ---------------- CONTROLLERS ----------------
   final _nameController = TextEditingController();
   final _facultyController = TextEditingController();

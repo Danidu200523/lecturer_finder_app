@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import 'edit_student_profile_screen.dart';
 
 class StudentProfileScreen extends StatelessWidget {
   const StudentProfileScreen({super.key});
@@ -19,20 +20,30 @@ class StudentProfileScreen extends StatelessWidget {
           "My Profile",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.edit, color: Colors.black),
+       actions: [
+  Padding(
+    padding: const EdgeInsets.only(right: 16),
+    child: GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const EditStudentProfileScreen(),
           ),
-        ],
+        );
+      },
+      child: const Icon(Icons.edit, color: Colors.black),
+    ),
+  ),
+],
       ),
 
-      /// ✅ FIXED BODY
+      
       body: Builder(
         builder: (context) {
           final user = FirebaseAuth.instance.currentUser;
 
-          /// ✅ STOP EVERYTHING AFTER LOGOUT
+          
           if (user == null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (context.mounted) {
@@ -196,7 +207,7 @@ class StudentProfileScreen extends StatelessWidget {
   }
 }
 
-/// UNCHANGED
+
 class ProfileItem extends StatelessWidget {
   final IconData icon;
   final String text;
