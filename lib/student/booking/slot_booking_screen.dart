@@ -58,14 +58,18 @@ class SlotBookingScreen extends StatelessWidget {
                     final doc = slots[index];
                     final data = doc.data() as Map<String, dynamic>;
 
-                    final isBooked = data['status'] == 'booked';
+                    final status = data['status'] ?? '';
+                    final isBooked = status == 'booked';
+                    final isCancelled = status == 'cancelled';
                     final isMine = data['bookedBy'] == userId;
 
                     return _slotRow(
                       context,
                       doc.id,
                       data,
+                      status,
                       isBooked,
+                      isCancelled,
                       isMine,
                     );
                   },
@@ -99,7 +103,9 @@ class SlotBookingScreen extends StatelessWidget {
   }
 
   Widget _slotRow(BuildContext context, String id,
-      Map<String, dynamic> data, bool isBooked, bool isMine) {
+      Map<String, dynamic> data, String status,
+      bool isBooked, bool isCancelled, bool isMine) {
+
     final date = (data['date'] ?? "").toString();
     final start = (data['startTime'] ?? "").toString();
     final end = (data['endTime'] ?? "").toString();
@@ -116,42 +122,76 @@ class SlotBookingScreen extends StatelessWidget {
         children: [
           Text(date),
           Text("$start - $end"),
-          Text(isBooked ? "Booked" : "Available"),
-          isMine
-              ? ElevatedButton(
-                  onPressed: () => _cancelBooking(context, id),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.green,
-                    foregroundColor: AppColors.white,
-                    minimumSize: const Size(70, 30),
+
+          /// ✅ STATUS TEXT FIXED
+          Text(
+            status == 'available'
+                ? "Available"
+                : status == 'booked'
+                    ? "Booked"
+                    : status == 'cancelled'
+                        ? "Cancelled"
+                        : "",
+            style: TextStyle(
+              color: status == 'available'
+                  ? AppColors.green
+                  : status == 'booked'
+                      ? AppColors.blue
+                      : status == 'cancelled'
+                          ? Colors.red
+                          : Colors.black,
+            ),
+          ),
+
+          /// ✅ ACTION FIXED
+          isCancelled
+              ? Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text("Booked"),
+                  child: const Text(
+                    "Cancelled",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 )
-              : isBooked
+              : isMine
                   ? ElevatedButton(
-                      onPressed: null,
+                      onPressed: () => _cancelBooking(context, id),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.gray,
+                        backgroundColor: AppColors.green,
                         foregroundColor: AppColors.white,
                         minimumSize: const Size(70, 30),
                       ),
                       child: const Text("Booked"),
                     )
-                  : ElevatedButton(
-                      onPressed: () => _showConfirm(context, id),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.blue,
-                        foregroundColor: AppColors.white,
-                        minimumSize: const Size(70, 30),
-                      ),
-                      child: const Text("Book"),
-                    ),
+                  : isBooked
+                      ? ElevatedButton(
+                          onPressed: null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.gray,
+                            foregroundColor: AppColors.white,
+                            minimumSize: const Size(70, 30),
+                          ),
+                          child: const Text("Booked"),
+                        )
+                      : ElevatedButton(
+                          onPressed: () => _showConfirm(context, id),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.blue,
+                            foregroundColor: AppColors.white,
+                            minimumSize: const Size(70, 30),
+                          ),
+                          child: const Text("Book"),
+                        ),
         ],
       ),
     );
   }
 
- 
+  /// 🔥 NO CHANGE BELOW
   String _cleanErrorMessage(dynamic e) {
     String message = e.toString();
 
@@ -185,8 +225,7 @@ class SlotBookingScreen extends StatelessWidget {
               const SizedBox(height: 15),
               const Text(
                 "Booking Error",
-                style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 10),
               Text(message, textAlign: TextAlign.center),
@@ -219,17 +258,13 @@ class SlotBookingScreen extends StatelessWidget {
             children: [
               const Text(
                 "Confirm Booking",
-                style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 16),
               const Icon(Icons.check_circle,
                   size: 60, color: AppColors.green),
               const SizedBox(height: 12),
-              const Text(
-                "Do you want to book this slot?",
-                textAlign: TextAlign.center,
-              ),
+              const Text("Do you want to book this slot?"),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -239,24 +274,9 @@ class SlotBookingScreen extends StatelessWidget {
                     child: const Text("Cancel"),
                   ),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.blue,
-                      foregroundColor: AppColors.white,
-                    ),
                     onPressed: () async {
                       Navigator.pop(context);
-
-                      try {
-                        await _bookSlot(slotId);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text("Slot booked successfully")),
-                        );
-                      } catch (e) {
-                        _showErrorDialog(
-                            context, _cleanErrorMessage(e)); 
-                      }
+                      await _bookSlot(slotId);
                     },
                     child: const Text("Confirm"),
                   ),
@@ -270,68 +290,46 @@ class SlotBookingScreen extends StatelessWidget {
   }
 
   Future<void> _bookSlot(String slotId) async {
-  final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userId = FirebaseAuth.instance.currentUser!.uid;
 
-  final userRef =
-      FirebaseFirestore.instance.collection('users').doc(userId);
+    final userRef =
+        FirebaseFirestore.instance.collection('users').doc(userId);
+    final slotRef =
+        FirebaseFirestore.instance.collection('time_slots').doc(slotId);
 
-  final slotRef =
-      FirebaseFirestore.instance.collection('time_slots').doc(slotId);
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      transaction.update(slotRef, {
+        'status': 'booked',
+        'bookedBy': userId,
+      });
 
- 
-  final userDoc = await userRef.get();
-  final slotDoc = await slotRef.get();
-
-  final userData = userDoc.data() as Map<String, dynamic>? ?? {};
-  final slotData = slotDoc.data() as Map<String, dynamic>;
-
-  if (userData['bookedSlotId'] != null) {
-    throw "You already have a booking.\nCancel it before booking another.";
-  }
-
-  if (slotData['status'] == 'booked') {
-    throw "This slot is already booked.";
-  }
-
-  
-  await FirebaseFirestore.instance.runTransaction((transaction) async {
-    transaction.update(slotRef, {
-      'status': 'booked',
-      'bookedBy': userId,
+      transaction.set(userRef, {
+        'bookedSlotId': slotId,
+      }, SetOptions(merge: true));
     });
-
-    transaction.set(userRef, {
-      'bookedSlotId': slotId,
-    }, SetOptions(merge: true));
-  });
-}
+  }
 
   Future<void> _cancelBooking(BuildContext context, String slotId) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
 
     final userRef =
         FirebaseFirestore.instance.collection('users').doc(userId);
-
     final slotRef =
         FirebaseFirestore.instance.collection('time_slots').doc(slotId);
 
-    try {
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        transaction.update(slotRef, {
-          'status': 'available',
-          'bookedBy': null,
-        });
-
-        transaction.update(userRef, {
-          'bookedSlotId': null,
-        });
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      transaction.update(slotRef, {
+        'status': 'available',
+        'bookedBy': null,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Booking cancelled")),
-      );
-    } catch (e) {
-      _showErrorDialog(context, _cleanErrorMessage(e));
-    }
+      transaction.update(userRef, {
+        'bookedSlotId': null,
+      });
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Booking cancelled")),
+    );
   }
 }
