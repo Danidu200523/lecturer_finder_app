@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lecturer_finder_app/core/theme/app_colors.dart';
+import 'view_booking_screen.dart';
+
 
 class SlotManagementScreen extends StatefulWidget {
   const SlotManagementScreen({super.key});
@@ -21,7 +23,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    /// WAIT until FirebaseAuth is ready
+    
     if (user == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -84,7 +86,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
 
               const SizedBox(height: 24),
 
-              /// HEADER ROW
+              
               _tableRow(
                 isHeader: true,
                 date: "Date",
@@ -95,7 +97,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
 
               const SizedBox(height: 8),
 
-              /// DATA ROWS
+              
               ...slots.map((doc) {
                 final data = doc.data() as Map<String, dynamic>;
 
@@ -125,7 +127,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
     );
   }
 
-  /// ROW WIDGET
+  
   Widget _tableRow({
     required String date,
     required String time,
@@ -146,7 +148,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
 
       child: Row(
         children: [
-          /// DATE
+          
           Expanded(
             flex: 2,
             child: Text(
@@ -158,7 +160,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
             ),
           ),
 
-          /// TIME
+          
           Expanded(
             flex: 2,
             child: isHeader
@@ -192,7 +194,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
                   ),
           ),
 
-          /// STATUS
+          
           Expanded(
             flex: 2,
             child: Text(
@@ -208,7 +210,7 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
             ),
           ),
 
-          /// ACTION
+         
           SizedBox(
             width: 90,
             child: isHeader
@@ -221,10 +223,22 @@ class _SlotManagementScreenState extends State<SlotManagementScreen> {
                 ? SizedBox(
                     width: 70,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ViewBookingScreen(
+        bookingId: docId!,
+      ),
+    ),
+  );
+},
                       child: const Text(
                         "View",
+                        style: TextStyle(
+                         color: AppColors.linkedText,
                         overflow: TextOverflow.ellipsis,
+                        )
                       ),
                     ),
                   )

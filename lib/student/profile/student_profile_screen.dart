@@ -14,7 +14,12 @@ class StudentProfileScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: const Icon(Icons.arrow_back, color: Colors.black),
+        leading: IconButton(
+  icon: const Icon(Icons.arrow_back, color: AppColors.black),
+  onPressed: () {
+    Navigator.pop(context);
+  },
+),
         centerTitle: true,
         title: const Text(
           "My Profile",

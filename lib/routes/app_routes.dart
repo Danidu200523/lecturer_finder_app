@@ -18,6 +18,7 @@ import '../student/booking/lecturer_availability_screen.dart';
 import '../student/booking/slot_booking_screen.dart';
 import '../student/profile/student_profile_screen.dart';
 import '../student/profile/edit_student_profile_screen.dart';
+import '../lecturer/slots/view_booking_screen.dart';
 
 
 class AppRoutes {
@@ -32,6 +33,7 @@ class AppRoutes {
     '/add-slot': (context) => const AddTimeSlotScreen(),
     '/edit-profile': (context) => const LecturerEditProfileScreen(),
     '/lecturer-logout': (context) => LecturerLogoutScreen(),
+    '/view-booking': (context) => const ViewBookingScreen(bookingId: ""),
 
     //student routes
     '/student-login': (context) => const StudentLoginScreen(),
