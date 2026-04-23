@@ -77,7 +77,12 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: const Icon(Icons.arrow_back, color: AppColors.black),
+        leading: IconButton(
+  icon: const Icon(Icons.arrow_back, color: AppColors.black),
+  onPressed: () {
+    Navigator.pop(context);
+  },
+),
         centerTitle: true,
         title: const Text(
           "Edit Profile",
