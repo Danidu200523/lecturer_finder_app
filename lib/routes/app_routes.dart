@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lecturer_finder_app/auth/lecturer/lecturer_login_screen.dart';
 import 'package:lecturer_finder_app/lecturer/logout/lecturer_logout_screen.dart';
 import 'package:lecturer_finder_app/lecturer/profile/edit_lecturer_profile_screen.dart'
-    show EditProfileScreen;
+    show LecturerEditProfileScreen;
 import 'package:lecturer_finder_app/lecturer/slots/add_slot_screen.dart';
 import 'package:lecturer_finder_app/lecturer/slots/slot_management_screen.dart';
 import '../auth/lecturer/lecturer_signup_screen.dart';
@@ -17,6 +17,8 @@ import '../student/favorites/favorite_lecturers_screen.dart';
 import '../student/booking/lecturer_availability_screen.dart';
 import '../student/booking/slot_booking_screen.dart';
 import '../student/profile/student_profile_screen.dart';
+import '../student/profile/edit_student_profile_screen.dart';
+
 
 class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
@@ -28,7 +30,7 @@ class AppRoutes {
     '/lecturer-status': (context) => const LecturerStatusScreen(),
     '/manage-slots': (context) => const SlotManagementScreen(),
     '/add-slot': (context) => const AddTimeSlotScreen(),
-    '/edit-profile': (context) => const EditProfileScreen(),
+    '/edit-profile': (context) => const LecturerEditProfileScreen(),
     '/lecturer-logout': (context) => LecturerLogoutScreen(),
 
     //student routes
@@ -39,5 +41,6 @@ class AppRoutes {
     '/lecturer-availability': (context) => const LecturerAvailabilityScreen(),
     '/slot-booking': (context) => const SlotBookingScreen(lecturerId: ""),
     '/student-profile': (context) => const StudentProfileScreen(),
+    '/student-edit-profile': (context) => const EditStudentProfileScreen(),
   };
 }
