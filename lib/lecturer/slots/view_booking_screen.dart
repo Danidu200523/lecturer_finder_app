@@ -7,13 +7,71 @@ class ViewBookingScreen extends StatelessWidget {
 
   const ViewBookingScreen({super.key, required this.bookingId});
 
+  
   Future<void> updateStatus(String status) async {
     await FirebaseFirestore.instance
-        .collection('time_slots') // ✅ FIXED
+        .collection('time_slots')
         .doc(bookingId)
         .update({
       'status': status,
     });
+  }
+
+  
+  Future<void> cancelBookingWithNotification() async {
+    final slotRef = FirebaseFirestore.instance
+        .collection('time_slots')
+        .doc(bookingId);
+
+    final slotDoc = await slotRef.get();
+    final data = slotDoc.data() as Map<String, dynamic>;
+
+    final studentId = data['bookedBy'];
+
+   
+    await slotRef.update({
+      'status': 'cancelled',
+    });
+
+    
+    if (studentId != null && studentId != "") {
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'userId': studentId,
+        'title': 'Booking Cancelled',
+        'message': 'Your booking has been cancelled by the lecturer',
+        'createdAt': Timestamp.now(),
+        'isRead': false,
+      });
+    }
+  }
+
+  
+  Future<void> confirmBookingWithNotification() async {
+    final slotRef = FirebaseFirestore.instance
+        .collection('time_slots')
+        .doc(bookingId);
+
+    final slotDoc = await slotRef.get();
+    final data = slotDoc.data() as Map<String, dynamic>;
+
+    final studentId = data['bookedBy'];
+
+    
+    await slotRef.update({
+      'status': 'confirmed',
+    });
+
+    /// 🔔 SEND CONFIRM NOTIFICATION
+    if (studentId != null && studentId != "") {
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'userId': studentId,
+        'title': 'Booking Confirmed',
+        'message':
+            'Your booking on ${data['date']} at ${data['startTime']} has been confirmed',
+        'createdAt': Timestamp.now(),
+        'isRead': false,
+      });
+    }
   }
 
   @override
@@ -36,7 +94,7 @@ class ViewBookingScreen extends StatelessWidget {
 
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance
-            .collection('time_slots') // ✅ FIXED
+            .collection('time_slots')
             .doc(bookingId)
             .get(),
         builder: (context, snapshot) {
@@ -44,7 +102,6 @@ class ViewBookingScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          /// ✅ SAFETY CHECK
           if (!snapshot.data!.exists) {
             return const Center(child: Text("Booking not found"));
           }
@@ -57,7 +114,7 @@ class ViewBookingScreen extends StatelessWidget {
           final time = "${map['startTime']} - ${map['endTime']}";
           final status = map['status'] ?? '';
 
-          /// 🔥 FETCH STUDENT NAME USING UID
+          
           return FutureBuilder<DocumentSnapshot>(
             future: FirebaseFirestore.instance
                 .collection('users')
@@ -85,32 +142,32 @@ class ViewBookingScreen extends StatelessWidget {
 
                     const SizedBox(height: 40),
 
-                    /// ✅ CONFIRM BUTTON
+                    
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: AppColors.green,
                         minimumSize: const Size(double.infinity, 50),
                       ),
                       onPressed: () async {
-                        await updateStatus("confirmed");
+                        await confirmBookingWithNotification(); 
                         Navigator.pop(context);
                       },
-                      child: const Text("Confirm"),
+                      child: const Text("Confirm",style: TextStyle(color: AppColors.whiteText),),
                     ),
 
                     const SizedBox(height: 10),
 
-                    /// ❌ CANCEL BUTTON
+                    
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: AppColors.red,
                         minimumSize: const Size(double.infinity, 50),
                       ),
                       onPressed: () async {
-                        await updateStatus("cancelled");
+                        await cancelBookingWithNotification();
                         Navigator.pop(context);
                       },
-                      child: const Text("Cancel"),
+                      child: const Text("Cancel",style: TextStyle(color: AppColors.whiteText),),
                     ),
                   ],
                 ),

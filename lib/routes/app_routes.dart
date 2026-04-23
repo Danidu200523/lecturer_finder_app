@@ -19,6 +19,7 @@ import '../student/booking/slot_booking_screen.dart';
 import '../student/profile/student_profile_screen.dart';
 import '../student/profile/edit_student_profile_screen.dart';
 import '../lecturer/slots/view_booking_screen.dart';
+import '../notifications/student_notification_screen.dart';
 
 
 class AppRoutes {
@@ -44,5 +45,6 @@ class AppRoutes {
     '/slot-booking': (context) => const SlotBookingScreen(lecturerId: ""),
     '/student-profile': (context) => const StudentProfileScreen(),
     '/student-edit-profile': (context) => const EditStudentProfileScreen(),
+    '/student-notifications': (context) => const StudentNotificationScreen(),
   };
 }

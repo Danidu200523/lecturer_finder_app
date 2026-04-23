@@ -123,7 +123,6 @@ class SlotBookingScreen extends StatelessWidget {
           Text(date),
           Text("$start - $end"),
 
-          /// ✅ STATUS TEXT FIXED
           Text(
             status == 'available'
                 ? "Available"
@@ -143,7 +142,6 @@ class SlotBookingScreen extends StatelessWidget {
             ),
           ),
 
-          /// ✅ ACTION FIXED
           isCancelled
               ? Container(
                   padding:
@@ -191,24 +189,23 @@ class SlotBookingScreen extends StatelessWidget {
     );
   }
 
-  /// 🔥 NO CHANGE BELOW
-  String _cleanErrorMessage(dynamic e) {
-    String message = e.toString();
-
-    if (message.contains("Exception:")) {
-      message = message.split("Exception:").last;
-    }
-
-    if (message.contains("Error:")) {
-      message = message.split("Error:").last;
-    }
-
-    if (message.contains("]")) {
-      message = message.split("]").last;
-    }
-
-    return message.trim();
+ String _cleanErrorMessage(dynamic e) {
+  if (e is FirebaseException) {
+    return e.message ?? "Something went wrong";
   }
+
+  String message = e.toString();
+
+  if (message.contains("Exception:")) {
+    message = message.replaceAll("Exception:", "").trim();
+  }
+
+  if (message.contains("Dart exception")) {
+    return "Something went wrong. Please try again.";
+  }
+
+  return message;
+}
 
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(
@@ -276,7 +273,11 @@ class SlotBookingScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () async {
                       Navigator.pop(context);
-                      await _bookSlot(slotId);
+                      try {
+                        await _bookSlot(slotId);
+                      } catch (e) {
+                        _showErrorDialog(context, _cleanErrorMessage(e));
+                      }
                     },
                     child: const Text("Confirm"),
                   ),
@@ -289,6 +290,7 @@ class SlotBookingScreen extends StatelessWidget {
     );
   }
 
+  
   Future<void> _bookSlot(String slotId) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
 
@@ -298,6 +300,26 @@ class SlotBookingScreen extends StatelessWidget {
         FirebaseFirestore.instance.collection('time_slots').doc(slotId);
 
     await FirebaseFirestore.instance.runTransaction((transaction) async {
+
+      final userDoc = await transaction.get(userRef);
+final alreadyBooked = userDoc.data()?['bookedSlotId'];
+
+/// 🔥 NEW FIXED LOGIC
+if (alreadyBooked != null && alreadyBooked != "") {
+
+  final oldSlotRef = FirebaseFirestore.instance
+      .collection('time_slots')
+      .doc(alreadyBooked);
+
+  final oldSlotDoc = await transaction.get(oldSlotRef);
+  final oldStatus = oldSlotDoc.data()?['status'];
+
+  /// ❌ BLOCK ONLY IF STILL ACTIVE
+  if (oldStatus == 'booked' || oldStatus == 'confirmed') {
+    throw Exception("You have already booked a slot");
+  }
+}
+
       transaction.update(slotRef, {
         'status': 'booked',
         'bookedBy': userId,
