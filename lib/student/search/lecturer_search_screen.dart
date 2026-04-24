@@ -54,7 +54,16 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: const BackButton(),
+        leading: IconButton(
+  icon: const Icon(Icons.arrow_back, color: Colors.black),
+  onPressed: () {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/role-selection',
+      (route) => false,
+    );
+  },
+),
         actions: [
           IconButton(
             icon: const Icon(Icons.person, color: AppColors.titleText),
@@ -76,6 +85,7 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
               ),
               const SizedBox(height: 20),
 
+              
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 decoration: BoxDecoration(
@@ -99,54 +109,130 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
 
               const SizedBox(height: 12),
 
-              Align(
-                alignment: Alignment.centerLeft,
-                child: AnimatedScale(
-                  scale: _isPressed ? 0.95 : 1.0,
-                  duration: const Duration(milliseconds: 120),
-                  child: Material(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(20),
-                    child: InkWell(
+              
+              Row(
+                children: [
+                  
+                  AnimatedScale(
+                    scale: _isPressed ? 0.95 : 1.0,
+                    duration: const Duration(milliseconds: 120),
+                    child: Material(
+                      color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(20),
-                      onTapDown: (_) {
-                        setState(() => _isPressed = true);
-                      },
-                      onTapUp: (_) {
-                        setState(() => _isPressed = false);
-                        Navigator.pushNamed(context, '/student-favorites');
-                      },
-                      onTapCancel: () {
-                        setState(() => _isPressed = false);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.blue),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Favorites",
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                            SizedBox(width: 6),
-                            Icon(Icons.star, color: AppColors.yellow, size: 18),
-                          ],
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTapDown: (_) {
+                          setState(() => _isPressed = true);
+                        },
+                        onTapUp: (_) {
+                          setState(() => _isPressed = false);
+                          Navigator.pushNamed(context, '/student-favorites');
+                        },
+                        onTapCancel: () {
+                          setState(() => _isPressed = false);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: AppColors.blue),
+                          ),
+                          child: const Row(
+                            children: [
+                              Text(
+                                "Favorites",
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                              SizedBox(width: 6),
+                              Icon(Icons.star,
+                                  color: AppColors.yellow, size: 18),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+
+                  const SizedBox(width: 10),
+
+                  
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('notifications')
+                        .where('userId', isEqualTo: studentId)
+                        .where('isRead', isEqualTo: false)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      int count = snapshot.data?.docs.length ?? 0;
+
+                      return Stack(
+                        children: [
+                          Material(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(20),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, '/student-notifications');
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  border:
+                                      Border.all(color: AppColors.blue),
+                                ),
+                                child: const Icon(
+                                  Icons.notifications,
+                                  color: AppColors.blue,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          
+                          if (count > 0)
+  Positioned(
+    right: 2,
+    top: 2,
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+      decoration: BoxDecoration(
+        color: Colors.red.shade600,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      constraints: const BoxConstraints(
+        minWidth: 14,
+        minHeight: 14,
+      ),
+      child: Text(
+        count > 9 ? '9+' : '$count',
+        style: const TextStyle(
+          color: AppColors.white,
+          fontSize: 9, 
+          fontWeight: FontWeight.w500,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    ),
+  ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
               ),
 
               const SizedBox(height: 16),
 
+              
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -154,8 +240,10 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                       .where('role', isEqualTo: 'lecturer')
                       .snapshots(),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                    if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(
+                          child: CircularProgressIndicator());
                     }
 
                     if (snapshot.hasError) {
@@ -167,12 +255,15 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                       );
                     }
 
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Center(child: Text("No lecturers found"));
+                    if (!snapshot.hasData ||
+                        snapshot.data!.docs.isEmpty) {
+                      return const Center(
+                          child: Text("No lecturers found"));
                     }
 
                     final lecturers = snapshot.data!.docs.where((doc) {
-                      final name = (doc['name'] ?? "").toString().toLowerCase();
+                      final name =
+                          (doc['name'] ?? "").toString().toLowerCase();
                       return name.contains(searchQuery);
                     }).toList();
 
@@ -197,20 +288,25 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                                 );
                               },
                               child: Container(
-                                margin: const EdgeInsets.only(bottom: 14),
+                                margin:
+                                    const EdgeInsets.only(bottom: 14),
                                 padding: const EdgeInsets.all(14),
                                 decoration: BoxDecoration(
                                   color: AppColors.background,
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius:
+                                      BorderRadius.circular(16),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.06),
+                                      color: Colors.black
+                                          .withOpacity(0.06),
                                       blurRadius: 10,
-                                      offset: const Offset(0, 4),
+                                      offset:
+                                          const Offset(0, 4),
                                     ),
                                   ],
                                   border: Border.all(
-                                    color: AppColors.gray.withOpacity(0.3),
+                                    color: AppColors.gray
+                                        .withOpacity(0.3),
                                   ),
                                 ),
                                 child: Row(
@@ -219,13 +315,14 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                                       radius: 30,
                                       backgroundImage:
                                           (doc['photoUrl'] != null &&
-                                              doc['photoUrl']
-                                                  .toString()
-                                                  .isNotEmpty)
-                                          ? NetworkImage(doc['photoUrl'])
-                                          : null,
-                                      child:
-                                          (doc['photoUrl'] == null ||
+                                                  doc['photoUrl']
+                                                      .toString()
+                                                      .isNotEmpty)
+                                              ? NetworkImage(
+                                                  doc['photoUrl'])
+                                              : null,
+                                      child: (doc['photoUrl'] ==
+                                                  null ||
                                               doc['photoUrl']
                                                   .toString()
                                                   .isEmpty)
@@ -240,28 +337,34 @@ class _StudentSearchScreenState extends State<StudentSearchScreen> {
                                         children: [
                                           Text(
                                             doc['name'] ?? "",
-                                            style: const TextStyle(
+                                            style:
+                                                const TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w600,
+                                              fontWeight:
+                                                  FontWeight.w600,
                                             ),
                                           ),
                                           Text(
-                                            doc['department'] ?? "",
-                                            style: const TextStyle(
+                                            doc['department'] ??
+                                                "",
+                                            style:
+                                                const TextStyle(
                                               fontSize: 13,
-                                              color: Colors.grey,
+                                              color: AppColors.gray,
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-
                                     GestureDetector(
                                       onTap: () {
-                                        toggleFavorite(lecturerId, isFav);
+                                        toggleFavorite(
+                                            lecturerId, isFav);
                                       },
                                       child: Icon(
-                                        isFav ? Icons.star : Icons.star_border,
+                                        isFav
+                                            ? Icons.star
+                                            : Icons.star_border,
                                         color: isFav
                                             ? AppColors.yellow
                                             : AppColors.gray,
