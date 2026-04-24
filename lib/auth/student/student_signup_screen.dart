@@ -35,55 +35,63 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
     "Business Management",
   ];
 
-  // ----- SIGN UP -----
+  
   Future<void> _signUpStudent() async {
-    if (_emailController.text.trim().isEmpty ||
-        _passwordController.text.trim().isEmpty ||
-        _selectedFaculty == null ||
-        _selectedDegree == null) {
-      _showError("Please fill all required fields");
-      return;
-    }
-
-    try {
-      setState(() => _loading = true);
-
-      final credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-          );
-
-      final uid = credential.user!.uid;
-
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        "name": _nameController.text.trim(),
-        "faculty": _selectedFaculty,
-        "degreeProgram": _selectedDegree,
-        "university": _universityController.text.trim(),
-        "email": _emailController.text.trim(),
-        "role": "student",
-        "createdAt": FieldValue.serverTimestamp(),
-      });
-
-      if (!mounted) return;
-      Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
-      _showError(e.message ?? "Sign up failed");
-    } catch (e) {
-      _showError("Something went wrong");
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+  if (_emailController.text.trim().isEmpty ||
+      _passwordController.text.trim().isEmpty ||
+      _selectedFaculty == null ||
+      _selectedDegree == null) {
+    _showError("Please fill all required fields");
+    return;
   }
 
+   
+  final email = _emailController.text.trim();
+
+  if (!email.endsWith("@students.nsbm.ac.lk")) {
+    _showEmailErrorDialog(context);
+    return;
+  }
+
+  try {
+    setState(() => _loading = true);
+
+    final credential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+      email: email,
+      password: _passwordController.text.trim(),
+    );
+
+    final uid = credential.user!.uid;
+
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      "name": _nameController.text.trim(),
+      "faculty": _selectedFaculty,
+      "degreeProgram": _selectedDegree,
+      "university": _universityController.text.trim(),
+      "email": email,
+      "role": "student",
+      "createdAt": FieldValue.serverTimestamp(),
+    });
+
+    if (!mounted) return;
+    Navigator.pop(context);
+
+  } on FirebaseAuthException catch (e) {
+    _showError(e.message ?? "Sign up failed");
+  } catch (e) {
+    _showError("Something went wrong");
+  } finally {
+    if (mounted) setState(() => _loading = false);
+  }
+}
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: AppColors.red),
     );
   }
 
-  // ------- TEXT FIELD -------
+  
   Widget _inputField({
     required TextEditingController controller,
     required IconData icon,
@@ -112,7 +120,7 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
     );
   }
 
-  // ---- DROPDOWN FIELD ------
+  
   Widget _dropdownField({
     required String hint,
     required IconData icon,
@@ -146,7 +154,7 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
     );
   }
 
-  // ---- UI ---
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -272,4 +280,48 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
       ),
     );
   }
+  void _showEmailErrorDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (_) => Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.error,
+              color: AppColors.red,
+              size: 60,
+            ),
+            const SizedBox(height: 15),
+            const Text(
+              "Invalid Email",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              "Please use your university email address",
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK", style: TextStyle(color: AppColors.linkedText)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
 }
