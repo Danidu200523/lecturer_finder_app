@@ -1,16 +1,51 @@
-# lecturer_finder_app
+📘 Find My Lecturer
 
-A new Flutter project.
+A mobile application designed to help students easily find, view, and book available time slots with lecturers. This app improves communication between students and lecturers by providing a simple and efficient booking system.
 
-## Getting Started
+🚀 Features
+🔐 User Authentication (Login / Signup)
+👨‍🏫 View Lecturer Profiles
+📅 Book Available Time Slots
+🔔 Notification System (Booking updates)
+📌 Dashboard for quick access
+❌ Error handling & validation messages
+☁️ Firebase backend integration
 
-This project is a starting point for a Flutter application.
+🛠️ Tech Stack
+Frontend: Flutter (Dart)
+Backend / Services: Firebase Authentication, Cloud Firestore
+Tools & Libraries:
+Material UI
+Firebase SDK
 
-A few resources to get you started if this is your first Flutter project:
+📂 Project Structure
+lib/
+│
+├── screens/        # App screens (Login, Dashboard, Booking)
+├── widgets/        # Reusable UI components
+├── services/       # Firebase and backend logic
+├── models/         # Data models
+└── main.dart       # Entry point
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+📌 Future Improvements
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+📍 Lecturer location tracking
+💬 In-app chat system
+📊 Booking analytics dashboard
+🌐 Web version
+⭐ Lecturer rating system
+🤝 Contributing
+
+Contributions are welcome!
+
+Fork the project
+Create your feature branch
+Commit your changes
+Push to the branch
+Open a Pull Request
+
+🧑‍💻 Author
+Danidu Herath
+
+📄 License
+This project is licensed under the MIT License.
