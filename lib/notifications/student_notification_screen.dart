@@ -16,123 +16,154 @@ class StudentNotificationScreen extends StatelessWidget {
         title: const Text("Notifications"),
         centerTitle: true,
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('notifications')
-            .where('userId', isEqualTo: userId)
-            .snapshots(),
-        builder: (context, snapshot) {
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get(),
+
+        builder: (context, userSnapshot) {
+          if (!userSnapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text("Error loading notifications"),
-            );
-          }
+          final role = userSnapshot.data!.get('role');
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Text("No notifications"),
-            );
-          }
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('notifications')
+                .orderBy('createdAt', descending: true)
+                .snapshots(),
 
-          final notifications = snapshot.data!.docs;
+            builder: (context, snapshot) {
 
-          return ListView.builder(
-            itemCount: notifications.length,
-            itemBuilder: (context, index) {
-              final doc = notifications[index];
-              final data = doc.data() as Map<String, dynamic>;
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-              final title = data['title'] ?? '';
-              final message = data['message'] ?? '';
-              final isRead = data['isRead'] ?? false;
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text("Error loading notifications"),
+                );
+              }
 
-              
-              final timestamp = data['createdAt'] as Timestamp?;
-              final timeText = timestamp != null
-                  ? _formatExactTime(timestamp.toDate())
-                  : '';
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return const Center(
+                  child: Text("No notifications"),
+                );
+              }
 
-              return GestureDetector(
-                onTap: () async {
-                  if (!isRead) {
-                    await doc.reference.update({'isRead': true});
-                  }
-                },
-                onLongPress: () {
-                  _showDeleteDialog(context, doc);
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: isRead
-                        ? AppColors.white
-                        : AppColors.blue.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.black.withOpacity(0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
+              final allDocs = snapshot.data!.docs;
+
+              // 🔥 IMPORTANT FILTER (FIX)
+              final notifications = allDocs.where((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+
+                return data['receiverId'] == userId ||
+                       data['receiverId'] == "ALL" ||
+                       data['targetRole'] == role ||
+                       data['targetRole'] == "all";
+              }).toList();
+
+              if (notifications.isEmpty) {
+                return const Center(
+                  child: Text("No notifications"),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  final doc = notifications[index];
+                  final data = doc.data() as Map<String, dynamic>;
+
+                  final title = data['title'] ?? '';
+                  final message = data['message'] ?? '';
+                  final isRead = data['read'] ?? false;
+
+                  final timestamp = data['createdAt'] as Timestamp?;
+                  final timeText = timestamp != null
+                      ? _formatExactTime(timestamp.toDate())
+                      : '';
+
+                  return GestureDetector(
+                    onTap: () async {
+                      if (!isRead) {
+                        await doc.reference.update({'read': true}); // 🔥 FIXED
+                      }
+                    },
+
+                    onLongPress: () {
+                      _showDeleteDialog(context, doc);
+                    },
+
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.all(14),
+
+                      decoration: BoxDecoration(
+                        color: isRead
+                            ? AppColors.white
+                            : AppColors.blue.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
 
-                  
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
 
-                      
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.notifications,
-                              color: isRead
-                                  ? AppColors.gray
-                                  : AppColors.blue,
-                            ),
-                            const SizedBox(width: 12),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.notifications,
+                                  color: isRead
+                                      ? AppColors.gray
+                                      : AppColors.blue,
+                                ),
+                                const SizedBox(width: 12),
 
-                            
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    title,
-                                    style: TextStyle(
-                                      fontWeight: isRead
-                                          ? FontWeight.w400
-                                          : FontWeight.w600,
-                                    ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        title,
+                                        style: TextStyle(
+                                          fontWeight: isRead
+                                              ? FontWeight.w400
+                                              : FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(message),
+                                    ],
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(message),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
 
-                      
-                      Text(
-                        timeText,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.gray,
-                        ),
+                          Text(
+                            timeText,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.gray,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               );
             },
           );
@@ -141,7 +172,6 @@ class StudentNotificationScreen extends StatelessWidget {
     );
   }
 
-  
   String _formatExactTime(DateTime time) {
     final hour = time.hour > 12 ? time.hour - 12 : time.hour;
     final minute = time.minute.toString().padLeft(2, '0');
