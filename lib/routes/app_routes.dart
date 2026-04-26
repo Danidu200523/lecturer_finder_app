@@ -10,6 +10,7 @@ import '../splash/splash_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../auth/role_selection_screen.dart';
 import '../lecturer/availability/availability_marking_screen.dart';
+import '../notifications/lecturer_notification_screen.dart';
 import '../auth/student/student_login_screen.dart'; //  student routes
 import '../auth/student/student_signup_screen.dart';
 import '../student/search/lecturer_search_screen.dart';
@@ -35,6 +36,7 @@ class AppRoutes {
     '/edit-profile': (context) => const LecturerEditProfileScreen(),
     '/lecturer-logout': (context) => LecturerLogoutScreen(),
     '/view-booking': (context) => const ViewBookingScreen(bookingId: ""),
+    '/lecturer-notifications': (context) => const LecturerNotificationScreen(),
 
     //student routes
     '/student-login': (context) => const StudentLoginScreen(),
