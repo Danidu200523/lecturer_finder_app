@@ -268,7 +268,7 @@ class SlotBookingScreen extends StatelessWidget {
                 children: [
                   OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancel"),
+                    child: const Text("Cancel", style: TextStyle(color: AppColors.blue)),
                   ),
                   ElevatedButton(
                     onPressed: () async {
@@ -279,7 +279,7 @@ class SlotBookingScreen extends StatelessWidget {
                         _showErrorDialog(context, _cleanErrorMessage(e));
                       }
                     },
-                    child: const Text("Confirm"),
+                    child: const Text("Confirm", style: TextStyle(color: AppColors.blue)),
                   ),
                 ],
               )
@@ -291,67 +291,153 @@ class SlotBookingScreen extends StatelessWidget {
   }
 
   
-  Future<void> _bookSlot(String slotId) async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+ Future<void> _bookSlot(String slotId) async {
+  final userId = FirebaseAuth.instance.currentUser!.uid;
 
-    final userRef =
-        FirebaseFirestore.instance.collection('users').doc(userId);
-    final slotRef =
-        FirebaseFirestore.instance.collection('time_slots').doc(slotId);
+  final userRef =
+      FirebaseFirestore.instance.collection('users').doc(userId);
+  final slotRef =
+      FirebaseFirestore.instance.collection('time_slots').doc(slotId);
 
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
+  await FirebaseFirestore.instance.runTransaction((transaction) async {
 
-      final userDoc = await transaction.get(userRef);
-final alreadyBooked = userDoc.data()?['bookedSlotId'];
+    final userDoc = await transaction.get(userRef);
+    final alreadyBooked = userDoc.data()?['bookedSlotId'];
 
-/// 🔥 NEW FIXED LOGIC
-if (alreadyBooked != null && alreadyBooked != "") {
+    if (alreadyBooked != null && alreadyBooked != "") {
 
-  final oldSlotRef = FirebaseFirestore.instance
-      .collection('time_slots')
-      .doc(alreadyBooked);
+      final oldSlotRef = FirebaseFirestore.instance
+          .collection('time_slots')
+          .doc(alreadyBooked);
 
-  final oldSlotDoc = await transaction.get(oldSlotRef);
-  final oldStatus = oldSlotDoc.data()?['status'];
+      final oldSlotDoc = await transaction.get(oldSlotRef);
+      final oldStatus = oldSlotDoc.data()?['status'];
 
-  /// ❌ BLOCK ONLY IF STILL ACTIVE
-  if (oldStatus == 'booked' || oldStatus == 'confirmed') {
-    throw Exception("You have already booked a slot");
-  }
+      if (oldStatus == 'booked' || oldStatus == 'confirmed') {
+        throw Exception("You have already booked a slot");
+      }
+    }
+
+    
+    final studentName = userDoc.data()?['name'] ?? "Student";
+
+    final slotDoc = await transaction.get(slotRef);
+    final lecturerId = slotDoc.data()?['lecturerId'];
+
+    transaction.update(slotRef, {
+      'status': 'booked',
+      'bookedBy': userId,
+    });
+
+    transaction.set(userRef, {
+      'bookedSlotId': slotId,
+    }, SetOptions(merge: true));
+
+    
+    if (lecturerId != null) {
+      final notificationRef =
+          FirebaseFirestore.instance.collection('notifications').doc();
+
+      transaction.set(notificationRef, {
+        'title': 'New Booking',
+        'message': '$studentName booked your slot', 
+        'receiverId': lecturerId,
+        'createdAt': FieldValue.serverTimestamp(),
+        'read': false,
+      });
+    }
+  });
 }
+ Future<void> _cancelBooking(BuildContext context, String slotId) async {
+  final userId = FirebaseAuth.instance.currentUser!.uid;
 
-      transaction.update(slotRef, {
-        'status': 'booked',
-        'bookedBy': userId,
-      });
+  final userRef =
+      FirebaseFirestore.instance.collection('users').doc(userId);
+  final slotRef =
+      FirebaseFirestore.instance.collection('time_slots').doc(slotId);
 
-      transaction.set(userRef, {
-        'bookedSlotId': slotId,
-      }, SetOptions(merge: true));
-    });
-  }
+  await FirebaseFirestore.instance.runTransaction((transaction) async {
 
-  Future<void> _cancelBooking(BuildContext context, String slotId) async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userDoc = await transaction.get(userRef);
+    final studentName = userDoc.data()?['name'] ?? "Student";
 
-    final userRef =
-        FirebaseFirestore.instance.collection('users').doc(userId);
-    final slotRef =
-        FirebaseFirestore.instance.collection('time_slots').doc(slotId);
+    final slotDoc = await transaction.get(slotRef);
+    final lecturerId = slotDoc.data()?['lecturerId'];
 
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.update(slotRef, {
-        'status': 'available',
-        'bookedBy': null,
-      });
-
-      transaction.update(userRef, {
-        'bookedSlotId': null,
-      });
+    transaction.update(slotRef, {
+      'status': 'available',
+      'bookedBy': null,
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Booking cancelled")),
-    );
-  }
+    transaction.update(userRef, {
+      'bookedSlotId': null,
+    });
+
+    
+    if (lecturerId != null) {
+      final notificationRef =
+          FirebaseFirestore.instance.collection('notifications').doc();
+
+      transaction.set(notificationRef, {
+        'title': 'Booking Cancelled',
+        'message': '$studentName cancelled the booking', 
+        'receiverId': lecturerId,
+        'createdAt': FieldValue.serverTimestamp(),
+        'read': false,
+      });
+    }
+  });
+
+  // ✅ YOUR POPUP (UNCHANGED)
+  showDialog(
+    context: context,
+    builder: (_) => Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+
+            const Icon(
+              Icons.cancel,
+              color: AppColors.red,
+              size: 60,
+            ),
+
+            const SizedBox(height: 15),
+
+            const Text(
+              "Cancelled",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            const Text(
+              "Your booking has been cancelled successfully.",
+              textAlign: TextAlign.center,
+            ),
+
+            const SizedBox(height: 20),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.blue,
+                foregroundColor: AppColors.white,
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
 }

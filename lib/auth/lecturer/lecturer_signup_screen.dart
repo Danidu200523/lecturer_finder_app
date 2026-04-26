@@ -70,7 +70,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
           children: [
             const SizedBox(height: 10),
 
-            /// Title
+            
             const Text(
               'Lecturer Sign Up',
               style: TextStyle(fontSize: 39, fontWeight: FontWeight.w600),
@@ -78,15 +78,15 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
 
             const SizedBox(height: 32),
 
-            /// Image
+           
             Image.asset(
-              'assets/images/lecturer_signup.png', // use your exact image
+              'assets/images/lecturer_signup.png', 
               height: 200,
             ),
 
             const SizedBox(height: 30),
 
-            /// Form Card
+            
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(16),
@@ -99,7 +99,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    /// Name
+                    
                     _inputContainer(
                       child: TextFormField(
                         controller: nameController,
@@ -110,7 +110,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                       ),
                     ),
 
-                    /// Faculty Dropdown
+                    
                     _inputContainer(
                       child: DropdownButtonFormField<String>(
                         initialValue: selectedFaculty,
@@ -129,7 +129,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                       ),
                     ),
 
-                    /// Department Dropdown
+                    
                     _inputContainer(
                       child: DropdownButtonFormField<String>(
                         initialValue: selectedDepartment,
@@ -148,7 +148,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                       ),
                     ),
 
-                    /// Cabin Location
+                    
                     _inputContainer(
                       child: TextFormField(
                         controller: cabinController,
@@ -159,7 +159,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                       ),
                     ),
 
-                    /// University Email
+                    
                     _inputContainer(
                       child: TextFormField(
                         controller: emailController,
@@ -171,7 +171,7 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
                       ),
                     ),
 
-                    /// Password
+                   
                     _inputContainer(
                       child: TextFormField(
                         controller: passwordController,
@@ -185,70 +185,83 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
 
                     const SizedBox(height: 16),
 
-                    /// Sign Up Button
+                    
                     SizedBox(
-                      width: double.infinity,
-                      height: 45,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                        ),
-                        onPressed: () async {
-                          try {
-                            // Create user with Firebase Authentication
+  width: double.infinity,
+  height: 45,
+  child: ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: AppColors.blue,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+    ),
+    onPressed: () async {
+      try {
 
-                            UserCredential userCredential = await FirebaseAuth
-                                .instance
-                                .createUserWithEmailAndPassword(
-                                  email: emailController.text.trim(),
-                                  password: passwordController.text.trim(),
-                                );
+        
+        final email = emailController.text.trim();
 
-                            //Get user UID
+        
+        if (!email.endsWith("@nsbm.ac.lk")) {
+          _showEmailErrorDialog(context);
+          return; 
+        }
 
-                            String uid = userCredential.user!.uid;
+        
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+          email: email,
+          password: passwordController.text.trim(),
+        );
 
-                            // Save lecturer data to Firestore
-                            await FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(uid)
-                                .set({
-                                  'name': nameController.text.trim(),
-                                  'faculty': selectedFaculty,
-                                  'department': selectedDepartment,
-                                  'cabinLocation': cabinController.text.trim(),
-                                  'email': emailController.text.trim(),
-                                  'role': 'lecturer',
-                                  'photoUrl': '',
-                                  'createdAt': FieldValue.serverTimestamp(),
-                                });
+        
+        String uid = userCredential.user!.uid;
 
-                            //Navigate after success
+        
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .set({
+          'name': nameController.text.trim(),
+          'faculty': selectedFaculty,
+          'department': selectedDepartment,
+          'cabinLocation': cabinController.text.trim(),
+          'email': email,
+          'role': 'lecturer',
+          'photoUrl': '',
+          'createdAt': FieldValue.serverTimestamp(),
+        });
 
-                            Navigator.pushReplacementNamed(
-                              context,
-                              '/lecturer-status',
-                            );
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(e.toString())),
-                            );
-                          }
-                        },
+        
+        Navigator.pushReplacementNamed(
+          context,
+          '/lecturer-status',
+        );
 
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            color: AppColors.whiteText,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
+      } catch (e) {
+        
+        String message = e.toString();
+
+        if (message.contains("Exception:")) {
+          message = message.replaceAll("Exception:", "").trim();
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
+    },
+    child: const Text(
+      'Sign Up',
+      style: TextStyle(
+        color: AppColors.whiteText,
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+  ),
+),
                   ],
                 ),
               ),
@@ -258,4 +271,45 @@ class _LecturerSignUpScreenState extends State<LecturerSignUpScreen> {
       ),
     );
   }
+   void _showEmailErrorDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error, color: AppColors.red, size: 60),
+              const SizedBox(height: 15),
+              const Text(
+                "Invalid Email",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "Please use your university email address",
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("OK", style: TextStyle(color: AppColors.linkedText)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
+
