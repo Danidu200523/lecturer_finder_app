@@ -103,91 +103,133 @@ class SlotBookingScreen extends StatelessWidget {
   }
 
   Widget _slotRow(BuildContext context, String id,
-      Map<String, dynamic> data, String status,
-      bool isBooked, bool isCancelled, bool isMine) {
+    Map<String, dynamic> data, String status,
+    bool isBooked, bool isCancelled, bool isMine) {
 
-    final date = (data['date'] ?? "").toString();
-    final start = (data['startTime'] ?? "").toString();
-    final end = (data['endTime'] ?? "").toString();
+  final date = (data['date'] ?? "").toString();
+  final start = (data['startTime'] ?? "").toString();
+  final end = (data['endTime'] ?? "").toString();
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.blue),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(date),
-          Text("$start - $end"),
+  return Container(
+    margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+    decoration: BoxDecoration(
+      border: Border.all(color: AppColors.blue),
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
 
-          Text(
-            status == 'available'
-                ? "Available"
-                : status == 'booked'
-                    ? "Booked"
-                    : status == 'cancelled'
-                        ? "Cancelled"
-                        : "",
-            style: TextStyle(
-              color: status == 'available'
-                  ? AppColors.green
+        // DATE
+        Expanded(
+          flex: 2,
+          child: Text(
+            date,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+
+        // TIME
+        Expanded(
+          flex: 2,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                start,
+                style: const TextStyle(fontSize: 12),
+              ),
+              Text(
+                end,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+
+        // STATUS
+        Expanded(
+          flex: 2,
+          child: Center(
+            child: Text(
+              status == 'available'
+                  ? "Available"
                   : status == 'booked'
-                      ? AppColors.blue
+                      ? "Booked"
                       : status == 'cancelled'
-                          ? Colors.red
-                          : Colors.black,
+                          ? "Cancelled"
+                          : "",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: status == 'available'
+                    ? AppColors.green
+                    : status == 'booked'
+                        ? AppColors.blue
+                        : status == 'cancelled'
+                            ? Colors.red
+                            : Colors.black,
+              ),
             ),
           ),
+        ),
 
-          isCancelled
-              ? Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    "Cancelled",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                )
-              : isMine
-                  ? ElevatedButton(
-                      onPressed: () => _cancelBooking(context, id),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.green,
-                        foregroundColor: AppColors.white,
-                        minimumSize: const Size(70, 30),
-                      ),
-                      child: const Text("Booked"),
-                    )
-                  : isBooked
-                      ? ElevatedButton(
-                          onPressed: null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.gray,
-                            foregroundColor: AppColors.white,
-                            minimumSize: const Size(70, 30),
-                          ),
-                          child: const Text("Booked"),
-                        )
-                      : ElevatedButton(
-                          onPressed: () => _showConfirm(context, id),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.blue,
-                            foregroundColor: AppColors.white,
-                            minimumSize: const Size(70, 30),
-                          ),
-                          child: const Text("Book"),
+        // BUTTON
+        Expanded(
+          flex: 2,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: isCancelled
+                ? Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      "Cancelled",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                : isMine
+                    ? ElevatedButton(
+                        onPressed: () => _cancelBooking(context, id),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.green,
+                          foregroundColor: AppColors.white,
+                          minimumSize: const Size(70, 30),
                         ),
-        ],
-      ),
-    );
-  }
+                        child: const Text("Booked"),
+                      )
+                    : isBooked
+                        ? ElevatedButton(
+                            onPressed: null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.gray,
+                              foregroundColor: AppColors.white,
+                              minimumSize: const Size(70, 30),
+                            ),
+                            child: const Text("Booked"),
+                          )
+                        : ElevatedButton(
+                            onPressed: () => _showConfirm(context, id),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.blue,
+                              foregroundColor: AppColors.white,
+                              minimumSize: const Size(70, 30),
+                            ),
+                            child: const Text("Book"),
+                          ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
  String _cleanErrorMessage(dynamic e) {
   if (e is FirebaseException) {
