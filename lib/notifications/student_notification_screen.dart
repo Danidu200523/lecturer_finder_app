@@ -56,7 +56,7 @@ class StudentNotificationScreen extends StatelessWidget {
 
               final allDocs = snapshot.data!.docs;
 
-              // 🔥 IMPORTANT FILTER (FIX)
+              
               final notifications = allDocs.where((doc) {
                 final data = doc.data() as Map<String, dynamic>;
 
@@ -90,7 +90,7 @@ class StudentNotificationScreen extends StatelessWidget {
                   return GestureDetector(
                     onTap: () async {
                       if (!isRead) {
-                        await doc.reference.update({'read': true}); // 🔥 FIXED
+                        await doc.reference.update({'read': true}); 
                       }
                     },
 

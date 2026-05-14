@@ -2,16 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
-class  EditStudentProfileScreen extends StatefulWidget {
+class EditStudentProfileScreen extends StatefulWidget {
   const EditStudentProfileScreen({super.key});
 
   @override
-  State<EditStudentProfileScreen> createState() => _EditStudentProfileScreenState();
+  State<EditStudentProfileScreen> createState() =>
+      _EditStudentProfileScreenState();
 }
 
 class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
-
   final user = FirebaseAuth.instance.currentUser;
 
   final nameController = TextEditingController();
@@ -19,6 +22,7 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
   final courseController = TextEditingController();
   final universityController = TextEditingController();
   final emailController = TextEditingController();
+  String photoUrl = "";
 
   bool isLoading = true;
 
@@ -26,6 +30,51 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
   void initState() {
     super.initState();
     loadUserData();
+  }
+
+  Future<void> _changeProfilePicture() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 70,
+      );
+
+      if (image == null) return;
+
+      File file = File(image.path);
+
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) return;
+
+      // STORAGE PATH
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child("profile_images")
+          .child("${user.uid}.jpg");
+
+      // UPLOAD IMAGE
+      await ref.putFile(file);
+
+      // GET DOWNLOAD URL
+      final imageUrl = await ref.getDownloadURL();
+
+      // UPDATE FIRESTORE
+      await FirebaseFirestore.instance.collection("users").doc(user.uid).update(
+        {"photoUrl": imageUrl},
+      );
+
+      setState(() {
+        photoUrl = imageUrl;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Profile picture updated")));
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> loadUserData() async {
@@ -42,6 +91,7 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
       courseController.text = data['degreeProgram'] ?? '';
       universityController.text = data['university'] ?? '';
       emailController.text = data['email'] ?? '';
+      photoUrl = data['photoUrl'] ?? '';
     }
 
     setState(() {
@@ -50,10 +100,7 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
   }
 
   Future<void> updateProfile() async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user!.uid)
-        .update({
+    await FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
       'name': nameController.text,
       'faculty': facultyController.text,
       'degreeProgram': courseController.text,
@@ -61,15 +108,13 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
       'email': emailController.text,
     });
 
-    Navigator.pop(context); 
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -78,11 +123,11 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-  icon: const Icon(Icons.arrow_back, color: AppColors.black),
-  onPressed: () {
-    Navigator.pop(context);
-  },
-),
+          icon: const Icon(Icons.arrow_back, color: AppColors.black),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         centerTitle: true,
         title: const Text(
           "Edit Profile",
@@ -95,33 +140,35 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
           children: [
             const SizedBox(height: 10),
 
-           
-            const CircleAvatar(
+            CircleAvatar(
               radius: 45,
-              backgroundImage: AssetImage("assets/profile.jpg"),
+              backgroundImage: photoUrl.isNotEmpty
+                  ? NetworkImage(photoUrl)
+                  : const AssetImage("assets/profile.jpg") as ImageProvider,
             ),
 
             const SizedBox(height: 10),
 
-            
             Text(
               nameController.text,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
 
             const SizedBox(height: 5),
 
-            const Text(
-              "Change Profile Picture",
-              style: TextStyle(color: AppColors.blue),
+            GestureDetector(
+              onTap: _changeProfilePicture,
+              child: const Text(
+                "Change Profile Picture",
+                style: TextStyle(
+                  color: AppColors.blue,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
 
             const SizedBox(height: 20),
 
-            
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.symmetric(vertical: 10),
@@ -151,7 +198,6 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
 
             const SizedBox(height: 30),
 
-            
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: ElevatedButton(
@@ -177,7 +223,6 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
     );
   }
 
-  
   Widget buildField(IconData icon, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -189,9 +234,7 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
           Expanded(
             child: TextField(
               controller: controller,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-              ),
+              decoration: const InputDecoration(border: InputBorder.none),
             ),
           ),
 
